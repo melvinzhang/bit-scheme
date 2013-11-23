@@ -1,0 +1,102 @@
+Copyright (C) 1995 Danny Dube, Universite de Montreal. All rights reserved.
+
+OVERVIEW
+
+This is my implementation of a compact programmation system for
+Scheme.  It is composed of a byte-compiler and a run-time module.  The
+run-time module and the output of the byte-compiler are compact and
+allow the creation of very small executables.
+
+FILES
+
+The tar file contains the following files:
+README		This file.
+bit.c		Run-time module.
+bit.h		Header of the run-time module.
+bit.scm		Byte-compiler.
+librairie.scm	Scheme library source file.
+
+USE
+
+To compile a Scheme source file, load the byte-compiler in your
+favorite Scheme interpreter and use the function "byte-compile".
+Ex:	(byte-compile "prog.scm" "prog.c")
+
+To generate the executable, use your C compiler on the produced
+file and the run-time module.
+Ex:	my-cc prog.c bit.c
+
+FEATURES
+
+The implementation was originally created to show that it is possible
+to program a micro-controler (such as the 68HC11) in Scheme.  Because
+of this, the implementation is not fully R4RS compliant.  I list here
+what is or is not included:
+
+- All the syntax forms are implemented, even the optional ones.
+
+- The library doesn't cover the I/O ports section, since it makes
+  little sense in the context of a processor without terminal or file
+  system.  Nevertheless, some I/O functions are implemented, but they
+  refer only to "standard input" and "standard output".
+
+- The numbers are restricted to exact bounded integers (fixnums).
+
+- Absolutely NO error detection is done.  The program is assumed to be
+  bug-free.
+
+- The remaining of the R4RS is implemented correctly, even high level
+  features such as first-class continuations and tail-recursion in
+  constant space are present.
+
+The implementation produces C code.  The run-time module is fairly
+small and the byte-code produced from a Scheme source file is very
+compact.  It's up to the C compiler to produce small executable code
+with it.
+
+- For example, the byte-compilation of all the library file (~25
+  Kbytes) produces about 5.5 Kbytes of byte-code.
+
+- My tests with a modified GCC for the 68HC11 produced an executable
+  of ~22 Kbytes (all the Scheme library functions included).  I guess
+  that a translation by hand in the 68HC11 assembler could give even
+  better results (say 10 to 14 Kbytes).
+
+The garbage collector used in the run-time module is a real-time one.
+
+The implementation is optimized for space, and not at all for speed.
+The resulting executables are quite slow.  They're about 30 times
+slower than the SCM interpreter.
+
+PAPERS
+
+Some documentation related to the implementation can be found in my
+Web page:
+	http://www.iro.umontreal.ca/~dube/
+The documentation is in french.
+
+There is an article about the real-time garbage collector:
+	"Un GC temps re'el semi-compactant"
+
+There is my masters thesis:
+	"Un syste`me de programmation Scheme pour micro-contro^leur"
+
+WARNING
+
+I decided to make my implementation accessible because there were many
+persons that asked for it.
+
+- I do not pretend this implementation is complete and can be used as
+  is (even on the 68HC11).
+
+- The implementation is not well commented and when there are
+  comments, they are in french.
+
+- Everybody is free to modify and use it for educational or research
+  purposes, but no real support should be expected from me.
+
+AUTHOR
+
+Danny Dube'
+Universite' de Montre'al
+E-mail: dube@iro.umontreal.ca
