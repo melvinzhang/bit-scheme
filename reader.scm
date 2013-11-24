@@ -15,10 +15,9 @@
                                  (char-whitespace? ch)))
 
 (define (read)
-  (define ch (read-char))
-  ;(display "read:")
-  ;(write ch)
-  ;(newline)
+  (read-with-char (read-char)))
+
+(define (read-with-char ch)
   (cond ((eof-object? ch) ch)
         ((char-left-paren? ch) (read-list))
         ((char-whitespace? ch) (read))
@@ -66,16 +65,7 @@
         ((and (char-dot? ch) (identifier-end? (peek-char))) (car (read-list)))
         ((char-whitespace? ch) (read-list))
         ((char-comment? ch) (read-comment) (read-list))
-        (else (let 
-          ((elem (cond ((char-left-paren? ch) (read-list))
-                      ((char-quote? ch) (cons 'quote (cons (read) '())))
-                      ((char-quasiquote? ch) (cons 'quasiquote (cons (read) '())))
-                      ((char-unquote? ch) (cons 'unquote (cons (read) '())))
-                      ((char-string? ch) (read-string))
-                      ((char-character? ch) (read-char-literal))
-                      ((char-numeric? ch) (read-number ch))
-                      (else (read-identifier ch)))))
-          (cons elem (read-list))))))
+        (else (let ((elem (read-with-char ch))) (cons elem (read-list))))))
 
 (define (char-list->number lst)
   (string->number (list->string lst)))
