@@ -30,9 +30,14 @@
         (else (read-identifier ch))))
 
 (define (read-char-quote)
+  (define ch (read-char))
   ;(display "read-char-quote:")
+  ;(write ch)
   ;(newline)
-  (read-char) (read-char))
+  (cond ((char=? ch #\f) #f)
+        ((char=? ch #\t) #t)
+        ((char-backslash? ch) (read-char)) 
+        (else (display "ERROR! Unknown character constant"))))
 
 (define (read-comment)
   (if (not (char-newline? (read-char))) (read-comment)))
