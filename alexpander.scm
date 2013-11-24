@@ -401,7 +401,7 @@
 ;;         (null-environment 5)))
 ;; => (foo 1 2 3 4)
 
-
+
 ;; BASIC USAGE:
 
 ;; There are four supported ways to use this:
@@ -453,7 +453,7 @@
 ;; changed, any r5rs-conformant program will still be translated to an
 ;; equivalent macro-free r5rs program.
 
-
+
 ;; INTERNALS
 
 ;; [NOTE: this documentation is certainly not complete, and it kind of
@@ -645,7 +645,7 @@
 ;; (expand-syntax-bindings bindings id-n syntax-env ienv store loc-n k)
 ;;   => (k store loc-n)
 
-
+
 (define (sid? sexp)          (or (symbol? sexp) (renamed-sid? sexp)))
 (define (renamed-sid? sexp)  (and (vector? sexp) (< 1 (vector-length sexp))))
 (define (svector? sexp)      (and (vector? sexp) (= 1 (vector-length sexp))))
@@ -1975,7 +1975,7 @@
 	    ((lambda (ignore) (begin . y)) x))))))
   (expand-program (cons startup (expand-program forms))))
 
-
+
 ;; Rest of file is a junkyard of thoughts.
 
 '
