@@ -1756,56 +1756,56 @@
    " 250" " 251" " 252" " 253" " 254" " 255"))
 
 (define write-bytecode
-  (lambda (bc port)
-    (display "int bytecode_len = " port)
+  (lambda (bc)
+    (display "int bytecode_len = ")
     (let ((len (length bc)))
-      (write len port)
+      (write len)
       (if (> len 32768)
 	  (begin
 	    (display "Warning: bytecode too long.")
 	    (newline))))
-    (display ";" port)
-    (newline port)
-    (display "unsigned char bytecode[] = {" port)
+    (display ";")
+    (newline)
+    (display "unsigned char bytecode[] = {")
     (let ((virgule ""))
       (let loop ((bc bc) (mod 0))
 	(if (not (null? bc))
 	    (begin
-	      (display virgule port)
+	      (display virgule)
 	      (set! virgule ",")
 	      (if (= mod 0)
 		  (begin
-		    (newline port)
-		    (display "       " port)
+		    (newline)
+		    (display "       ")
 		    (set! mod -12)))
-	      (display (vector-ref byte-strings (car bc)) port)
+	      (display (vector-ref byte-strings (car bc)))
 	      (loop (cdr bc) (+ mod 1))))))
-    (display "};" port)
-    (newline port)))
+    (display "};")
+    (newline)))
 
 (define write-const-desc
-  (lambda (cd port)
+  (lambda (cd)
     (let ((cd (map char->integer (string->list cd))))
-      (display "int const_desc_len = " port)
-      (write (length cd) port)
-      (display ";" port)
-      (newline port)
-      (display "unsigned char const_desc[] = {" port)
+      (display "int const_desc_len = ")
+      (write (length cd))
+      (display ";")
+      (newline)
+      (display "unsigned char const_desc[] = {")
       (let ((virgule ""))
 	(let loop ((cd cd) (mod 0))
 	  (if (not (null? cd))
 	      (begin
-		(display virgule port)
+		(display virgule)
 		(set! virgule ",")
 		(if (= mod 0)
 		    (begin
-		      (newline port)
-		      (display "       " port)
+		      (newline)
+		      (display "       ")
 		      (set! mod -12)))
-		(display (vector-ref byte-strings (car cd)) port)
+		(display (vector-ref byte-strings (car cd)))
 		(loop (cdr cd) (+ mod 1))))))
-      (display "};" port)
-      (newline port))))
+      (display "};")
+      (newline))))
 
 (define pretty-signed-int
   (lambda (int)
@@ -1815,38 +1815,35 @@
       (string-append padding sint))))
 
 (define write-glob-init-codes
-  (lambda (glob-var-init-codes port)
-    (display "int nb_scm_globs = " port)
-    (write (length glob-var-init-codes) port)
-    (display ";" port)
-    (newline port)
-    (display "int scm_globs[] = {" port)
+  (lambda (glob-var-init-codes)
+    (display "int nb_scm_globs = ")
+    (write (length glob-var-init-codes))
+    (display ";")
+    (newline)
+    (display "int scm_globs[] = {")
     (let ((virgule ""))
       (let loop ((gi glob-var-init-codes) (mod 0))
 	(if (not (null? gi))
 	    (begin
-	      (display virgule port)
+	      (display virgule)
 	      (set! virgule ",")
 	      (if (= mod 0)
 		  (begin
-		    (newline port)
-		    (display "       " port)
+		    (newline)
+		    (display "       ")
 		    (set! mod -8)))
-	      (display (pretty-signed-int (car gi)) port)
+	      (display (pretty-signed-int (car gi)))
 	      (loop (cdr gi) (+ mod 1))))))
-    (display "};" port)
-    (newline port)))
+    (display "};")
+    (newline)))
 
 (define write-output
-  (lambda (final-program-bytecode
-	   const-desc-string
-	   glob-var-init-codes
-	   nameout)
-    (let ((port (open-output-file nameout)))
-      (write-bytecode        final-program-bytecode port) (newline port)
-      (write-const-desc      const-desc-string      port) (newline port)
-      (write-glob-init-codes glob-var-init-codes    port)
-      (close-output-port port))))
+  (lambda (final-program-bytecode const-desc-string glob-var-init-codes)
+    (begin
+      (write-bytecode        final-program-bytecode) (newline)
+      (write-const-desc      const-desc-string     ) (newline)
+      (write-glob-init-codes glob-var-init-codes   )
+    )))
 
 
 
@@ -1854,7 +1851,7 @@
 ; Programme principal
 
 (define byte-compile
-  (lambda (namein nameout)
+  (lambda (namein)
     (init-glob-vars)
     (let* ((source (read-source namein))
 	   (source-symbols (find-all-symbols source))
@@ -1893,5 +1890,4 @@
 	  (set! final-program-bytecode (link-bytecode flat-program-bytecode))
 	  (set! const-desc-string (code-const))
 	  (set! glob-var-init-codes (code-glob-inits))
-	  (write-output final-program-bytecode const-desc-string
-			glob-var-init-codes nameout))))))
+	  (write-output final-program-bytecode const-desc-string glob-var-init-codes))))))
