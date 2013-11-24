@@ -61,7 +61,7 @@
   ;(write ch)
   ;(newline)
   (cond ((char-right-paren? ch) '())
-        ((char-dot? ch) (car (read-list)))
+        ((and (char-dot? ch) (identifier-end? (peek-char))) (car (read-list)))
         ((char-whitespace? ch) (read-list))
         ((char-comment? ch) (read-comment) (read-list))
         (else (let 
