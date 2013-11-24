@@ -1,3 +1,11 @@
-(define (loop) (let ((ch (read-char)))  (write ch) (loop)))
+(define (loop) 
+  (let ((ch (read-char)))  
+    (display "char: ")
+    (write ch)
+    (newline)
+    (display "int: ")
+    (write (char->integer ch))
+    (newline)
+    (loop)))
 
 (loop)
