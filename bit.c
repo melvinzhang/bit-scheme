@@ -975,11 +975,13 @@ int ll_input(void)
   int c;
 
   c = getchar();
+  /*
   if (c == EOF)
     {
       printf("EOF\nQuit\n");
       exit(0);
     }
+  */
   return c;
 }
 
