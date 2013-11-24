@@ -3,3 +3,6 @@
 	csi -e '(load "bit.scm") (byte-compile "in.scm" "out.c")'
 	gcc out.c bit.c -o $@
 	rm in.scm out.c
+
+%-ex.scm: %.scm
+	cat alexpander.scm $^ > $@
