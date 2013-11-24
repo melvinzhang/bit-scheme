@@ -122,15 +122,11 @@
 ; Lire le programme source
 
 (define read-source
-  (lambda (name)
-    (let ((port (open-input-file name)))
-      (let loop ()
-	(let ((exp (read port)))
-	  (if (eof-object? exp)
-	      (begin
-		(close-input-port port)
-		'())
-	      (cons exp (loop))))))))
+  (lambda ()
+    (let loop ()
+	  (let ((exp (read)))
+	    (if (eof-object? exp) '()
+	      (cons exp (loop)))))))
 
 
 
@@ -1851,9 +1847,9 @@
 ; Programme principal
 
 (define byte-compile
-  (lambda (namein)
+  (lambda ()
     (init-glob-vars)
-    (let* ((source (read-source namein))
+    (let* ((source (read-source))
 	   (source-symbols (find-all-symbols source))
 	   (uniq-pref (find-uniq-prefix source-symbols)))
       (set! gen-sym-pref uniq-pref)
