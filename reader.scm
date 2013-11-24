@@ -1,3 +1,4 @@
+(define (eof-object? ch) (eq? (char->integer ch) 255))
 (define (char-left-paren? ch) (char=? ch #\())
 (define (char-right-paren? ch) (char=? ch #\)))
 (define (char-comment? ch) (char=? ch #\;))
@@ -18,7 +19,8 @@
   ;(display "read:")
   ;(write ch)
   ;(newline)
-  (cond ((char-left-paren? ch) (read-list))
+  (cond ((eof-object? ch) ch)
+        ((char-left-paren? ch) (read-list))
         ((char-whitespace? ch) (read))
         ((char-comment? ch) (read-comment) (read))
         ((char-quote? ch) (cons 'quote (cons (read) '())))
@@ -87,5 +89,12 @@
           (else (cons ch (read-str)))))
   (list->string (read-str)))
 
-(display (read))
-(newline)
+(define (read-all)
+  (let ((datum (read)))
+    (if (eof-object? datum) '()
+      (begin
+        (display datum)
+        (newline)
+        (read-all)))))
+
+(read-all)
