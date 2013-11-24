@@ -37,7 +37,9 @@
   (cond ((char=? ch #\f) #f)
         ((char=? ch #\t) #t)
         ((char-backslash? ch) (read-char)) 
-        (else (display "ERROR! Unknown character constant"))))
+        (else (display "ERROR! Unknown character constant #") 
+              (display (read-identifier ch))
+              (newline))))
 
 (define (read-comment)
   (if (not (char-newline? (read-char))) (read-comment)))
