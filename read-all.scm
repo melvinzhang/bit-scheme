@@ -1,6 +1,8 @@
 (define (read-all)
   (let ((datum (read)))
-    (if (eof-object? datum) (display "EOF reached")
+    (if (eof-object? datum) 
+      (begin  
+        (display "EOF reached"))
       (begin
         (write datum)
         (newline)
