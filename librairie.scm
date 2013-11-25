@@ -816,6 +816,7 @@ procedure?
 ; 6.10
 read-char
 peek-char
+(define eof-object? (lambda (ch) (and (char? ch) (= (char->integer ch) 255))))
 (define write
   (lambda (d)
     (cond ((eq? d #f)

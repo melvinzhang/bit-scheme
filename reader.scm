@@ -1,4 +1,3 @@
-(define (eof-object? ch) (and (char? ch) (= (char->integer ch) 255)))
 (define (char-left-paren? ch) (char=? ch #\())
 (define (char-right-paren? ch) (char=? ch #\)))
 (define (char-comment? ch) (char=? ch #\;))
