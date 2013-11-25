@@ -6,71 +6,71 @@
 (define symbol-set-union
   (lambda (ss1 ss2)
     (cond ((null? ss1)
-	   ss2)
-	  ((memq (car ss1) ss2)
-	   (symbol-set-union (cdr ss1) ss2))
-	  (else
-	   (cons (car ss1) (symbol-set-union (cdr ss1) ss2))))))
+       ss2)
+      ((memq (car ss1) ss2)
+       (symbol-set-union (cdr ss1) ss2))
+      (else
+       (cons (car ss1) (symbol-set-union (cdr ss1) ss2))))))
 
 (define symbol-set-intersection
   (lambda (ss1 ss2)
     (cond ((null? ss1)
-	   '())
-	  ((memq (car ss1) ss2)
-	   (cons (car ss1) (symbol-set-intersection (cdr ss1) ss2)))
-	  (else
-	   (symbol-set-intersection (cdr ss1) ss2)))))
+       '())
+      ((memq (car ss1) ss2)
+       (cons (car ss1) (symbol-set-intersection (cdr ss1) ss2)))
+      (else
+       (symbol-set-intersection (cdr ss1) ss2)))))
 
 (define foldr
   (lambda (binop start l)
     (if (null? l)
-	start
-	(binop (car l) (foldr binop start (cdr l))))))
+    start
+    (binop (car l) (foldr binop start (cdr l))))))
 
 (define foldr1
   (lambda (binop l)
     (if (null? (cdr l))
-	(car l)
-	(binop (car l) (foldr1 binop (cdr l))))))
+    (car l)
+    (binop (car l) (foldr1 binop (cdr l))))))
 
 (define filter
   (lambda (pred? l)
     (cond ((null? l) '())
-	  ((pred? (car l)) (cons (car l) (filter pred? (cdr l))))
-	  (else (filter pred? (cdr l))))))
+      ((pred? (car l)) (cons (car l) (filter pred? (cdr l))))
+      (else (filter pred? (cdr l))))))
 
 (define formals->varlist
   (lambda (formals)
     (cond ((symbol? formals)
-	   (list formals))
-	  ((null? formals)
-	   '())
-	  (else
-	   (cons (car formals) (formals->varlist (cdr formals)))))))
+       (list formals))
+      ((null? formals)
+       '())
+      (else
+       (cons (car formals) (formals->varlist (cdr formals)))))))
 
 (define prefix?
   (lambda (s1 s2)
     (let ((l1 (string-length s1))
-	  (l2 (string-length s2)))
+      (l2 (string-length s2)))
       (if (> l1 l2)
-	  #f
-	  (let loop ((i 0))
-	    (cond ((= i l1)
-		   #t)
-		  ((char=? (string-ref s1 i) (string-ref s2 i))
-		   (loop (+ i 1)))
-		  (else
-		   #f)))))))
+      #f
+      (let loop ((i 0))
+        (cond ((= i l1)
+           #t)
+          ((char=? (string-ref s1 i) (string-ref s2 i))
+           (loop (+ i 1)))
+          (else
+           #f)))))))
 
 (define unprefix
   (lambda (s1 s2)
     (let ((l1 (string-length s1)))
       (cond ((= l1 (string-length s2))
-	     (string-append s1 "a"))
-	    ((char=? #\a (string-ref s2 l1))
-	     (string-append s1 "b"))
-	    (else
-	     (string-append s1 "a"))))))
+         (string-append s1 "a"))
+        ((char=? #\a (string-ref s2 l1))
+         (string-append s1 "b"))
+        (else
+         (string-append s1 "a"))))))
 
 
 
@@ -124,9 +124,9 @@
 (define read-source
   (lambda ()
     (let loop ()
-	  (let ((exp (read)))
-	    (if (eof-object? exp) '()
-	      (cons exp (loop)))))))
+      (let ((exp (read)))
+        (if (eof-object? exp) '()
+          (cons exp (loop)))))))
 
 
 
@@ -147,29 +147,29 @@
 (define find-all-symbols
   (lambda (d)
     (cond ((symbol? d)
-	   (list d))
-	  ((pair? d)
-	   (symbol-set-union (find-all-symbols (car d))
-			     (find-all-symbols (cdr d))))
-	  ((vector? d)
-	   (let loop ((pos (- (vector-length d) 1)))
-	     (if (< pos 0)
-		 '()
-		 (symbol-set-union (find-all-symbols (vector-ref d pos))
-				   (loop (- pos 1))))))
-	  (else
-	   '()))))
+       (list d))
+      ((pair? d)
+       (symbol-set-union (find-all-symbols (car d))
+                 (find-all-symbols (cdr d))))
+      ((vector? d)
+       (let loop ((pos (- (vector-length d) 1)))
+         (if (< pos 0)
+         '()
+         (symbol-set-union (find-all-symbols (vector-ref d pos))
+                   (loop (- pos 1))))))
+      (else
+       '()))))
 
 ; Trouver un prefixe unique pour avoir un gen-sym correct
 (define find-uniq-prefix
   (lambda (ss)
     (let loop ((pref "") (names (map symbol->string ss)))
       (if (null? names)
-	  pref
-	  (let ((name (car names)))
-	    (if (prefix? pref name)
-		(loop (unprefix pref name) (cdr names))
-		(loop pref (cdr names))))))))
+      pref
+      (let ((name (car names)))
+        (if (prefix? pref name)
+        (loop (unprefix pref name) (cdr names))
+        (loop pref (cdr names))))))))
 
 ; La fonction gen-sym
 (define gen-sym-pref #f)
@@ -178,8 +178,8 @@
 (define gen-sym
   (lambda ()
     (let* ((str-num (number->string gen-sym-number))
-	   (sym-name (string-append gen-sym-pref str-num))
-	   (sym (string->symbol sym-name)))
+       (sym-name (string-append gen-sym-pref str-num))
+       (sym (string->symbol sym-name)))
       (set! gen-sym-number (+ gen-sym-number 1))
       sym)))
 
@@ -196,202 +196,202 @@
 (define trans-define
   (lambda (l)
     (if (symbol? (cadr l))
-	l
-	(let ((procname (caadr l))
-	      (formals (cdadr l))
-	      (exps (cddr l)))
-	  `(define ,procname (lambda ,formals ,@exps))))))
+    l
+    (let ((procname (caadr l))
+          (formals (cdadr l))
+          (exps (cddr l)))
+      `(define ,procname (lambda ,formals ,@exps))))))
 
 ; A ne pas inserer dans la liste des translators
 (define flatten-begin
   (lambda (expbegin)
     (cons 'begin
-	  (let loop ((l (cdr expbegin)) (flat '()))
-	    (if (null? l)
-		flat
-		(let ((tete (car l))
-		      (queue (cdr l)))
-		  (if (and (pair? tete) (eq? (car tete) 'begin))
-		      (loop (cdr tete) (loop queue flat))
-		      (cons tete (loop queue flat)))))))))
+      (let loop ((l (cdr expbegin)) (flat '()))
+        (if (null? l)
+        flat
+        (let ((tete (car l))
+              (queue (cdr l)))
+          (if (and (pair? tete) (eq? (car tete) 'begin))
+              (loop (cdr tete) (loop queue flat))
+              (cons tete (loop queue flat)))))))))
 
 ; A ne pas inserer dans la liste des translators
 (define extract-define
   (lambda (lexp)
     (let ((tete (car lexp))
-	  (reste (cdr lexp)))
+      (reste (cdr lexp)))
       (if (and (pair? tete) (eq? (car tete) 'define))
-	  (let ((result (extract-define reste)))
-	    (cons (cons tete (car result)) (cdr result)))
-	  (cons '() lexp)))))
+      (let ((result (extract-define reste)))
+        (cons (cons tete (car result)) (cdr result)))
+      (cons '() lexp)))))
 
 ; A ne pas inserer dans la liste des translators
 (define trans-body
   (lambda (l)
     (let* ((flatbody (flatten-begin l))
-	   (result (extract-define (cdr flatbody)))
-	   (rawdefines (car result))
-	   (exps (cdr result))
-	   (defines (map trans-define rawdefines))
-	   (decls (map cdr defines))
-	   (body `(begin ,@exps)))
+       (result (extract-define (cdr flatbody)))
+       (rawdefines (car result))
+       (exps (cdr result))
+       (defines (map trans-define rawdefines))
+       (decls (map cdr defines))
+       (body `(begin ,@exps)))
       (if (null? decls)
-	  body
-	  `(letrec ,decls ,body)))))
+      body
+      `(letrec ,decls ,body)))))
 
 ; A ne pas inserer dans la liste des translators
 (define trans-lambda
   (lambda (l)
     (list 'lambda
-	  (cadr l)
-	  (trans-body (cons 'begin (cddr l))))))
+      (cadr l)
+      (trans-body (cons 'begin (cddr l))))))
 
 ; A ne pas inserer dans la liste des translators
 (define trans-begin
   (lambda (l)
     (let ((flat (flatten-begin l)))
       (if (null? (cddr flat))
-	  (cadr flat)
-	  flat))))
+      (cadr flat)
+      flat))))
 
 ; A ne pas inserer dans la liste des translators
 (define trans-normal-let
   (lambda (l)
     (let* ((bindings (cadr l))
-	   (body (cddr l))
-	   (vars (map car bindings))
-	   (inits (map cadr bindings)))
+       (body (cddr l))
+       (vars (map car bindings))
+       (inits (map cadr bindings)))
       `((lambda ,vars ,@body) ,@inits))))
 
 ; A ne pas inserer dans la liste des translators
 (define trans-let-loop
   (lambda (l)
     (let* ((loop-name (cadr l))
-	   (bindings (caddr l))
-	   (body (cdddr l))
-	   (vars (map car bindings))
-	   (inits (map cadr bindings)))
+       (bindings (caddr l))
+       (body (cdddr l))
+       (vars (map car bindings))
+       (inits (map cadr bindings)))
       `((letrec ((,loop-name (lambda ,vars ,@body)))
-	  ,loop-name)
-	,@inits))))
+      ,loop-name)
+    ,@inits))))
 
 (define trans-let
   (lambda (l)
     (if (symbol? (cadr l))
-	(trans-let-loop l)
-	(trans-normal-let l))))
+    (trans-let-loop l)
+    (trans-normal-let l))))
 
 (define trans-let*
   (lambda (l)
     (let ((bindings (cadr l))
-	  (body (cddr l)))
+      (body (cddr l)))
       (if (or (null? bindings) (null? (cdr bindings)))
-	  `(let ,bindings ,@body)
-	  (let ((prem (car bindings))
-		(reste (cdr bindings)))
-	    `(let (,prem) (let* ,reste ,@body)))))))
+      `(let ,bindings ,@body)
+      (let ((prem (car bindings))
+        (reste (cdr bindings)))
+        `(let (,prem) (let* ,reste ,@body)))))))
 
 (define trans-letrec
   (lambda (l)
     (let ((bindings (cadr l))
-	  (body (cddr l)))
+      (body (cddr l)))
       (if (null? bindings)
-	  `(let () ,@body)
-	  (let* ((vars (map car bindings))
-		 (inits (map cadr bindings))
-		 (falsebind (map (lambda (v) `(,v #f)) vars))
-		 (set!s (map (lambda (v i) `(set! ,v ,i)) vars inits)))
-	    `(let ,falsebind
-	       ,@set!s
-	       (let () ,@body)))))))
+      `(let () ,@body)
+      (let* ((vars (map car bindings))
+         (inits (map cadr bindings))
+         (falsebind (map (lambda (v) `(,v #f)) vars))
+         (set!s (map (lambda (v i) `(set! ,v ,i)) vars inits)))
+        `(let ,falsebind
+           ,@set!s
+           (let () ,@body)))))))
 
 (define trans-and
   (lambda (l)
     (cond ((null? (cdr l))
-	   #t)
-	  ((null? (cddr l))
-	   (cadr l))
-	  (else
-	   `(if ,(cadr l) (and ,@(cddr l)) #f)))))
+       #t)
+      ((null? (cddr l))
+       (cadr l))
+      (else
+       `(if ,(cadr l) (and ,@(cddr l)) #f)))))
 
 (define trans-or
   (lambda (l)
     (cond ((null? (cdr l))
-	   #f)
-	  ((null? (cddr l))
-	   (cadr l))
-	  (else
-	   (let* ((e-hd (cadr l))
-		  (e-tl (cddr l))
-		  (tmp (gen-sym)))
-	     `(let ((,tmp ,e-hd))
-		(if ,tmp
-		    ,tmp
-		    (or ,@e-tl))))))))
+       #f)
+      ((null? (cddr l))
+       (cadr l))
+      (else
+       (let* ((e-hd (cadr l))
+          (e-tl (cddr l))
+          (tmp (gen-sym)))
+         `(let ((,tmp ,e-hd))
+        (if ,tmp
+            ,tmp
+            (or ,@e-tl))))))))
 
 (define trans-cond
   (lambda (l)
     (if (null? (cdr l))
-	#f
-	(let* ((clause (cadr l))
-	       (autres (cddr l))
-	       (newcond (cons 'cond autres)))
-	  (cond ((eq? (car clause) 'else)
-		 (cons 'begin (cdr clause)))
-		((null? (cdr clause))
-		 (list 'or (car clause) newcond))
-		((eq? (cadr clause) '=>)
-		 (let* ((test (car clause))
-			(recipient (caddr clause))
-			(tmp (gen-sym)))
-		   `(let ((,tmp ,test))
-		      (if ,tmp
-			  (,recipient ,tmp)
-			  ,newcond))))
-		(else
-		 (let* ((test (car clause))
-			(actions (cdr clause))
-			(conseq (cons 'begin actions)))
-		   `(if ,test ,conseq ,newcond))))))))
+    #f
+    (let* ((clause (cadr l))
+           (autres (cddr l))
+           (newcond (cons 'cond autres)))
+      (cond ((eq? (car clause) 'else)
+         (cons 'begin (cdr clause)))
+        ((null? (cdr clause))
+         (list 'or (car clause) newcond))
+        ((eq? (cadr clause) '=>)
+         (let* ((test (car clause))
+            (recipient (caddr clause))
+            (tmp (gen-sym)))
+           `(let ((,tmp ,test))
+              (if ,tmp
+              (,recipient ,tmp)
+              ,newcond))))
+        (else
+         (let* ((test (car clause))
+            (actions (cdr clause))
+            (conseq (cons 'begin actions)))
+           `(if ,test ,conseq ,newcond))))))))
 
 (define trans-case
   (lambda (l)
     (let* ((tmp-key (gen-sym))
-	   (trans-test
-	    (lambda (test)
-	      (if (eq? test 'else) 'else `(,safe-name-memv ,tmp-key ',test))))
-	   (key (cadr l))
-	   (clauses (cddr l))
-	   (tests (map car clauses))
-	   (expr-lists (map cdr clauses))
-	   (memv-tests (map trans-test tests))
-	   (cond-clauses (map cons memv-tests expr-lists)))
+       (trans-test
+        (lambda (test)
+          (if (eq? test 'else) 'else `(,safe-name-memv ,tmp-key ',test))))
+       (key (cadr l))
+       (clauses (cddr l))
+       (tests (map car clauses))
+       (expr-lists (map cdr clauses))
+       (memv-tests (map trans-test tests))
+       (cond-clauses (map cons memv-tests expr-lists)))
       `(let ((,tmp-key ,key)) (cond ,@cond-clauses)))))
 
 (define trans-do
   (lambda (l)
     (let* ((normalize-step (lambda (v sf)
-			     (if (null? sf) v (car sf))))
-	   (bindings (cadr l))
-	   (testnsequence (caddr l))
-	   (commands (cdddr l))
-	   (vars (map car bindings))
-	   (inits (map cadr bindings))
-	   (steps-fac (map cddr bindings))
-	   (steps (map normalize-step vars steps-fac))
-	   (test (car testnsequence))
-	   (sequence (cdr testnsequence))
-	   (loop-var (gen-sym))
-	   (loop-call (cons loop-var steps))
-	   (loop-bindings (map list vars inits)))
+                 (if (null? sf) v (car sf))))
+       (bindings (cadr l))
+       (testnsequence (caddr l))
+       (commands (cdddr l))
+       (vars (map car bindings))
+       (inits (map cadr bindings))
+       (steps-fac (map cddr bindings))
+       (steps (map normalize-step vars steps-fac))
+       (test (car testnsequence))
+       (sequence (cdr testnsequence))
+       (loop-var (gen-sym))
+       (loop-call (cons loop-var steps))
+       (loop-bindings (map list vars inits)))
       `(let ,loop-var ,loop-bindings
-	    (if ,test
-		(begin
-		  #f
-		  ,@sequence)
-		(begin
-		  ,@commands
-		  ,loop-call))))))
+        (if ,test
+        (begin
+          #f
+          ,@sequence)
+        (begin
+          ,@commands
+          ,loop-call))))))
 
 (define trans-delay
   (lambda (exp)
@@ -402,113 +402,113 @@
 (define detect-unquote
   (lambda (exp level)
     (cond ((vector? exp)
-	   (let loop ((pos (- (vector-length exp) 1)))
-	     (cond ((< pos 0)
-		    #f)
-		   ((detect-unquote (vector-ref exp pos) level)
-		    #t)
-		   (else
-		    (loop (- pos 1))))))
-	  ((pair? exp)
-	   (let ((tete (car exp)))
-	     (cond ((eq? tete 'quasiquote)
-		    (detect-unquote (cadr exp) (+ level 1)))
-		   ((or (eq? tete 'unquote) (eq? tete 'unquote-splicing))
-		    (if (= level 1)
-			#t
-			(detect-unquote (cadr exp) (- level 1))))
-		   (else
-		    (or (detect-unquote tete level)
-			(detect-unquote (cdr exp) level))))))
-	  (else
-	   #f))))
+       (let loop ((pos (- (vector-length exp) 1)))
+         (cond ((< pos 0)
+            #f)
+           ((detect-unquote (vector-ref exp pos) level)
+            #t)
+           (else
+            (loop (- pos 1))))))
+      ((pair? exp)
+       (let ((tete (car exp)))
+         (cond ((eq? tete 'quasiquote)
+            (detect-unquote (cadr exp) (+ level 1)))
+           ((or (eq? tete 'unquote) (eq? tete 'unquote-splicing))
+            (if (= level 1)
+            #t
+            (detect-unquote (cadr exp) (- level 1))))
+           (else
+            (or (detect-unquote tete level)
+            (detect-unquote (cdr exp) level))))))
+      (else
+       #f))))
 
 (define trans-quasiquote
   (lambda (l)
     (let loop ((exp (cadr l)) (level 1))
       (cond ((not (detect-unquote exp level))
-	     (list 'quote exp))
-	    ((vector? exp)
-	     (list safe-name-list->vector
-		   (loop (vector->list exp) level)))
-	    ((pair? exp)
-	     (let ((tete (car exp)))
-	       (cond ((eq? tete 'quasiquote)
-		      (list safe-name-list
-			    ''quasiquote
-			    (loop (cadr exp) (+ level 1))))
-		     ((eq? tete 'unquote)
-		      (if (= level 1)
-			  (cadr exp)
-			  (list safe-name-list
-				''unquote
-				(loop (cadr exp) (- level 1)))))
-		     ((and (pair? tete)
-			   (eq? (car tete) 'unquote-splicing)
-		           (= level 1))
-		      (if (null? (cdr exp))
-			  (cadr tete)
-			  (list safe-name-append2
-				(cadr tete)
-				(loop (cdr exp) level))))
-		     ((eq? tete 'unquote-splicing)
-		      (list safe-name-list
-			    ''unquote-splicing
-			    (loop (cadr exp) (- level 1))))
-		     (else
-		      (list safe-name-cons
-			    (loop (car exp) level)
-			    (loop (cdr exp) level))))))))))
+         (list 'quote exp))
+        ((vector? exp)
+         (list safe-name-list->vector
+           (loop (vector->list exp) level)))
+        ((pair? exp)
+         (let ((tete (car exp)))
+           (cond ((eq? tete 'quasiquote)
+              (list safe-name-list
+                ''quasiquote
+                (loop (cadr exp) (+ level 1))))
+             ((eq? tete 'unquote)
+              (if (= level 1)
+              (cadr exp)
+              (list safe-name-list
+                ''unquote
+                (loop (cadr exp) (- level 1)))))
+             ((and (pair? tete)
+               (eq? (car tete) 'unquote-splicing)
+                   (= level 1))
+              (if (null? (cdr exp))
+              (cadr tete)
+              (list safe-name-append2
+                (cadr tete)
+                (loop (cdr exp) level))))
+             ((eq? tete 'unquote-splicing)
+              (list safe-name-list
+                ''unquote-splicing
+                (loop (cadr exp) (- level 1))))
+             (else
+              (list safe-name-cons
+                (loop (car exp) level)
+                (loop (cdr exp) level))))))))))
 
 (define translators
   (list (cons 'let trans-let)
-	(cons 'let* trans-let*)
-	(cons 'letrec trans-letrec)
-	(cons 'and trans-and)
-	(cons 'or trans-or)
-	(cons 'cond trans-cond)
-	(cons 'case trans-case)
-	(cons 'do trans-do)
-	(cons 'delay trans-delay)
-	(cons 'quasiquote trans-quasiquote)))
+    (cons 'let* trans-let*)
+    (cons 'letrec trans-letrec)
+    (cons 'and trans-and)
+    (cons 'or trans-or)
+    (cons 'cond trans-cond)
+    (cons 'case trans-case)
+    (cons 'do trans-do)
+    (cons 'delay trans-delay)
+    (cons 'quasiquote trans-quasiquote)))
 
 (define trans-sub
   (lambda (exp)
     (if (or (boolean? exp)
-	    (symbol? exp)
-	    (char? exp)
-	    (number? exp)
-	    (string? exp))
-	exp
-	(let ((tete (car exp)))
-	  (cond ((eq? tete 'quote)
-		 exp)
-		((eq? tete 'lambda)
-		 (let ((new-lambda (trans-lambda exp)))
-		   (list 'lambda
-			 (cadr new-lambda)
-			 (trans-sub (caddr new-lambda)))))
-		((eq? tete 'if)
-		 (cons 'if (map trans-sub (cdr exp))))
-		((eq? tete 'set!)
-		 (list 'set! (cadr exp) (trans-sub (caddr exp))))
-		((eq? tete 'begin)
-		 (trans-begin (cons 'begin (map trans-sub (cdr exp)))))
-		((eq? tete 'define)
-		 (let ((new-define (trans-define exp)))
-		   (list 'define
-			 (cadr new-define)
-			 (trans-sub (caddr new-define)))))
-		(else
-		 (let ((ass (assq tete translators)))
-		   (if ass
-		       (trans-sub ((cdr ass) exp))
-		       (let ((new-exp (map trans-sub exp)))
-			 (if (and (pair? (car new-exp))
-				  (eq? (caar new-exp) 'lambda)
-				  (null? (cadar new-exp)))
-			     (caddar new-exp)
-			     new-exp))))))))))
+        (symbol? exp)
+        (char? exp)
+        (number? exp)
+        (string? exp))
+    exp
+    (let ((tete (car exp)))
+      (cond ((eq? tete 'quote)
+         exp)
+        ((eq? tete 'lambda)
+         (let ((new-lambda (trans-lambda exp)))
+           (list 'lambda
+             (cadr new-lambda)
+             (trans-sub (caddr new-lambda)))))
+        ((eq? tete 'if)
+         (cons 'if (map trans-sub (cdr exp))))
+        ((eq? tete 'set!)
+         (list 'set! (cadr exp) (trans-sub (caddr exp))))
+        ((eq? tete 'begin)
+         (trans-begin (cons 'begin (map trans-sub (cdr exp)))))
+        ((eq? tete 'define)
+         (let ((new-define (trans-define exp)))
+           (list 'define
+             (cadr new-define)
+             (trans-sub (caddr new-define)))))
+        (else
+         (let ((ass (assq tete translators)))
+           (if ass
+               (trans-sub ((cdr ass) exp))
+               (let ((new-exp (map trans-sub exp)))
+             (if (and (pair? (car new-exp))
+                  (eq? (caar new-exp) 'lambda)
+                  (null? (cadar new-exp)))
+                 (caddar new-exp)
+                 new-exp))))))))))
 
 
 
@@ -609,29 +609,29 @@
 (define exp->node
   (lambda (exp)
     (cond ((or (boolean? exp) (char? exp) (number? exp) (string? exp))
-	   (make-cte-node exp))
-	  ((symbol? exp)
-	   (make-ref-node exp))
-	  (else  ; pair
-	   (let ((tete (car exp)))
-	     (cond ((eq? tete 'quote)
-		    (make-cte-node (cadr exp)))
-		   ((eq? tete 'lambda)
-		    (make-lambda-node (cadr exp) (exp->node (caddr exp))))
-		   ((eq? tete 'if)
-		    (make-if-node (exp->node (cadr exp))
-				  (exp->node (caddr exp))
-				  (exp->node
-				   (if (null? (cdddr exp)) #f (cadddr exp)))))
-		   ((eq? tete 'set!)
-		    (make-set!-node (cadr exp) (exp->node (caddr exp))))
-		   ((eq? tete 'begin)
-		    (make-begin-node (map exp->node (cdr exp))))
-		   ((eq? tete 'define)
-		    (make-def-node (cadr exp) (exp->node (caddr exp))))
-		   (else  ; procedure call
-		    (make-call-node (exp->node (car exp))
-				    (map exp->node (cdr exp))))))))))
+       (make-cte-node exp))
+      ((symbol? exp)
+       (make-ref-node exp))
+      (else  ; pair
+       (let ((tete (car exp)))
+         (cond ((eq? tete 'quote)
+            (make-cte-node (cadr exp)))
+           ((eq? tete 'lambda)
+            (make-lambda-node (cadr exp) (exp->node (caddr exp))))
+           ((eq? tete 'if)
+            (make-if-node (exp->node (cadr exp))
+                  (exp->node (caddr exp))
+                  (exp->node
+                   (if (null? (cdddr exp)) #f (cadddr exp)))))
+           ((eq? tete 'set!)
+            (make-set!-node (cadr exp) (exp->node (caddr exp))))
+           ((eq? tete 'begin)
+            (make-begin-node (map exp->node (cdr exp))))
+           ((eq? tete 'define)
+            (make-def-node (cadr exp) (exp->node (caddr exp))))
+           (else  ; procedure call
+            (make-call-node (exp->node (car exp))
+                    (map exp->node (cdr exp))))))))))
 
 
 
@@ -640,42 +640,42 @@
 
 (define extract-glob-names
   (let ((action-v
-	 (vector
-	  (lambda (node loop env)  ; cte
-	    '())
-	  (lambda (node loop env)  ; ref
-	    (let ((refsym (get-symbol node)))
-	      (if (memq refsym env)
-		  '()
-		  (list refsym))))
-	  (lambda (node loop env)  ; lambda
-	    (loop (get-body node)
-		  (symbol-set-union env (formals->varlist
-					 (get-formals node)))))
-	  (lambda (node loop env)  ; if
-	    (let ((test-globs (loop (get-test node) env))
-		  (conseq-globs (loop (get-conseq node) env))
-		  (altern-globs (loop (get-altern node) env)))
-	      (symbol-set-union (symbol-set-union test-globs conseq-globs)
-				altern-globs)))
-	  (lambda (node loop env)  ; set!
-	    (let* ((set!sym (get-symbol node))
-		   (l (if (memq set!sym env) '() (list set!sym))))
-	      (symbol-set-union l (loop (get-exp node) env))))
-	  (lambda (node loop env)  ; begin
-	    (let* ((lnode (get-lexp node))
-		   (llglob (map (lambda (node) (loop node env)) lnode)))
-	      (foldr1 symbol-set-union llglob)))
-	  (lambda (node loop env)  ; def
-	    (symbol-set-union (list (get-symbol node))
-			      (loop (get-exp node) env)))
-	  (lambda (node loop env)  ; call
-	    (let* ((lnode (cons (get-op node) (get-larg node)))
-		   (llglob (map (lambda (node) (loop node env)) lnode)))
-	      (foldr1 symbol-set-union llglob))))))
+     (vector
+      (lambda (node loop env)  ; cte
+        '())
+      (lambda (node loop env)  ; ref
+        (let ((refsym (get-symbol node)))
+          (if (memq refsym env)
+          '()
+          (list refsym))))
+      (lambda (node loop env)  ; lambda
+        (loop (get-body node)
+          (symbol-set-union env (formals->varlist
+                     (get-formals node)))))
+      (lambda (node loop env)  ; if
+        (let ((test-globs (loop (get-test node) env))
+          (conseq-globs (loop (get-conseq node) env))
+          (altern-globs (loop (get-altern node) env)))
+          (symbol-set-union (symbol-set-union test-globs conseq-globs)
+                altern-globs)))
+      (lambda (node loop env)  ; set!
+        (let* ((set!sym (get-symbol node))
+           (l (if (memq set!sym env) '() (list set!sym))))
+          (symbol-set-union l (loop (get-exp node) env))))
+      (lambda (node loop env)  ; begin
+        (let* ((lnode (get-lexp node))
+           (llglob (map (lambda (node) (loop node env)) lnode)))
+          (foldr1 symbol-set-union llglob)))
+      (lambda (node loop env)  ; def
+        (symbol-set-union (list (get-symbol node))
+                  (loop (get-exp node) env)))
+      (lambda (node loop env)  ; call
+        (let* ((lnode (cons (get-op node) (get-larg node)))
+           (llglob (map (lambda (node) (loop node env)) lnode)))
+          (foldr1 symbol-set-union llglob))))))
     (lambda (node)
       (let loop ((node node) (env '()))
-	((vector-ref action-v (node-type node)) node loop env)))))
+    ((vector-ref action-v (node-type node)) node loop env)))))
 
 
 
@@ -693,67 +693,67 @@
   (lambda (libname)
     (let ((port (open-input-file libname)))
       (let loop1 ((n 0))
-	(if (= n 4)
-	    (begin
-	      (close-input-port port)
-	      '())
-	    (let loop2 ()
-	      (let* ((datum (read port)))
-		(if datum
-		    (let ((reste (loop2)))
-		      (cons (cons datum (car reste)) (cdr reste)))
-		    (cons '() (loop1 (+ n 1)))))))))))
+    (if (= n 4)
+        (begin
+          (close-input-port port)
+          '())
+        (let loop2 ()
+          (let* ((datum (read port)))
+        (if datum
+            (let ((reste (loop2)))
+              (cons (cons datum (car reste)) (cdr reste)))
+            (cons '() (loop1 (+ n 1)))))))))))
 
 (define get-lib-cprims
   (lambda (libpart1)
     (map (lambda (def)
-	   (let ((name (car def))
-		 (no (cdr def)))
-	     (if (eq? name 'apply1)
-		 (set! apply1-cprim-no no))
-	     (cons name no)))
-	 libpart1)))
+       (let ((name (car def))
+         (no (cdr def)))
+         (if (eq? name 'apply1)
+         (set! apply1-cprim-no no))
+         (cons name no)))
+     libpart1)))
 
 (define get-lib-alias
   (lambda (libpart2 libpart3 libpart4)
     (let* ((defs (append libpart2 libpart3 libpart4))
-	   (defals (filter (lambda (def)
-			     (and (not (symbol? def))
-				  (symbol? (caddr def))))
-			   defs)))
+       (defals (filter (lambda (def)
+                 (and (not (symbol? def))
+                  (symbol? (caddr def))))
+               defs)))
       (map (lambda (defal) (cons (cadr defal) (caddr defal))) defals))))
 
 (define get-lib-clos
   (lambda (libpart2 libpart3 libpart4)
     (let* ((defs (append libpart2 libpart3 libpart4))
-	   (defcls (filter (lambda (def)
-			     (and (not (symbol? def))
-				  (not (symbol? (caddr def)))))
-			   defs)))
+       (defcls (filter (lambda (def)
+                 (and (not (symbol? def))
+                  (not (symbol? (caddr def)))))
+               defs)))
       (map (lambda (defcl) (cons (cadr defcl) (caddr defcl))) defcls))))
 
 (define get-lib-publics
   (lambda (libpart3 libpart4)
     (map (lambda (sym-or-def)
-	   (if (symbol? sym-or-def)
-	       sym-or-def
-	       (cadr sym-or-def)))
-	 (append libpart3 libpart4))))
+       (if (symbol? sym-or-def)
+           sym-or-def
+           (cadr sym-or-def)))
+     (append libpart3 libpart4))))
 
 (define get-lib-names
   (lambda (libpart1 libpart2 libpart3 libpart4)
     (let* ((cprim-names (map car libpart1))
-	   (defs (append libpart2 libpart3 libpart4))
-	   (truedefs (filter (lambda (def) (not (symbol? def))) defs)))
+       (defs (append libpart2 libpart3 libpart4))
+       (truedefs (filter (lambda (def) (not (symbol? def))) defs)))
       (append cprim-names (map cadr truedefs)))))
 
 (define load-lib
   (lambda ()
     (let* ((alllib (read-lib "librairie.scm"))
-	   (libpart1 (list-ref alllib 0))
-	   (libpart2 (list-ref alllib 1))
-	   (libpart3 (list-ref alllib 2))
-	   (libpart4 (list-ref alllib 3)))
+       (libpart1 (list-ref alllib 0))
+       (libpart2 (list-ref alllib 1))
+       (libpart3 (list-ref alllib 2))
+       (libpart4 (list-ref alllib 3)))
       (set! libcprims (get-lib-cprims libpart1))
       (set! libalias (get-lib-alias libpart2 libpart3 libpart4))
       (set! libclos (get-lib-clos libpart2 libpart3 libpart4))
@@ -773,31 +773,31 @@
   (lambda (dirreq)
     (let loop ((toadd dirreq) (added '()) (clos-nodes '()))
       (cond ((null? toadd)
-	     (set! allreq added)
-	     (set! req-clos-nodes clos-nodes))
-	    ((memq (car toadd) added)
-	     (loop (cdr toadd) added clos-nodes))
-	    (else
-	     (let* ((newfun (car toadd))
-		    (ass-cprim (assq newfun libcprims)))
-	       (if ass-cprim
-		   (loop (cdr toadd)
-			 (cons newfun added)
-			 clos-nodes)
-		   (let ((ass-alias (assq newfun libalias)))
-		     (if ass-alias
-			 (loop (cons (cdr ass-alias) (cdr toadd))
-			       (cons newfun added)
-			       clos-nodes)
-			 (let ((ass-clos (assq newfun libclos)))
-			   (let* ((code (cdr ass-clos))
-				  (sub-code (trans-sub code))
-				  (node (exp->node sub-code))
-				  (node-globs (extract-glob-names node))
-				  (new-clos (cons newfun node)))
-			     (loop (append node-globs (cdr toadd))
-				   (cons newfun added)
-				   (cons new-clos clos-nodes)))))))))))))
+         (set! allreq added)
+         (set! req-clos-nodes clos-nodes))
+        ((memq (car toadd) added)
+         (loop (cdr toadd) added clos-nodes))
+        (else
+         (let* ((newfun (car toadd))
+            (ass-cprim (assq newfun libcprims)))
+           (if ass-cprim
+           (loop (cdr toadd)
+             (cons newfun added)
+             clos-nodes)
+           (let ((ass-alias (assq newfun libalias)))
+             (if ass-alias
+             (loop (cons (cdr ass-alias) (cdr toadd))
+                   (cons newfun added)
+                   clos-nodes)
+             (let ((ass-clos (assq newfun libclos)))
+               (let* ((code (cdr ass-clos))
+                  (sub-code (trans-sub code))
+                  (node (exp->node sub-code))
+                  (node-globs (extract-glob-names node))
+                  (new-clos (cons newfun node)))
+                 (loop (append node-globs (cdr toadd))
+                   (cons newfun added)
+                   (cons new-clos clos-nodes)))))))))))))
 
 
 
@@ -816,109 +816,109 @@
   (lambda (d)
     (let ((ass (assoc d const-alist)))
       (if ass
-	  (cadr ass)
-	  (begin
-	    (cond ((or (null? d) (boolean? d) (char? d) (number? d))
-		   (set! const-alist
-			 (cons (cons d (cons const-counter d)) const-alist)))
-		  ((pair? d)
-		   (let* ((leftno (const-no (car d)))
-			  (rightno (const-no (cdr d)))
-			  (desc (cons leftno rightno)))
-		     (set! const-alist (cons (cons d (cons const-counter desc))
-					     const-alist))))
-		  ((string? d)
-		   (set! const-alist
-			 (cons (cons d (cons const-counter d)) const-alist)))
-		  ((symbol? d)
-		   (let* ((nom (symbol->string d))
-			  (nomno (const-no nom))
-			  (desc (string->symbol (number->string nomno))))
-		     (set! const-alist (cons (cons d (cons const-counter desc))
-					     const-alist))))
-		  ((vector? d)
-		   (let* ((listd (vector->list d))
-			  (listno (map const-no listd))
-			  (desc (list->vector listno)))
-		     (set! const-alist (cons (cons d (cons const-counter desc))
-					     const-alist)))))
-	    (set! const-counter (+ const-counter 1))
-	    (- const-counter 1))))))
+      (cadr ass)
+      (begin
+        (cond ((or (null? d) (boolean? d) (char? d) (number? d))
+           (set! const-alist
+             (cons (cons d (cons const-counter d)) const-alist)))
+          ((pair? d)
+           (let* ((leftno (const-no (car d)))
+              (rightno (const-no (cdr d)))
+              (desc (cons leftno rightno)))
+             (set! const-alist (cons (cons d (cons const-counter desc))
+                         const-alist))))
+          ((string? d)
+           (set! const-alist
+             (cons (cons d (cons const-counter d)) const-alist)))
+          ((symbol? d)
+           (let* ((nom (symbol->string d))
+              (nomno (const-no nom))
+              (desc (string->symbol (number->string nomno))))
+             (set! const-alist (cons (cons d (cons const-counter desc))
+                         const-alist))))
+          ((vector? d)
+           (let* ((listd (vector->list d))
+              (listno (map const-no listd))
+              (desc (list->vector listno)))
+             (set! const-alist (cons (cons d (cons const-counter desc))
+                         const-alist)))))
+        (set! const-counter (+ const-counter 1))
+        (- const-counter 1))))))
 
 (define top-const-no
   (lambda (d)
     (if (or (null? d) (boolean? d) (char? d) (number? d))
-	#f
-	(let* ((cno (const-no d))
-	       (ass (assv cno top-alist)))
-	  (if ass
-	      (cdr ass)
-	      (begin
-		(set! top-alist (cons (cons cno top-counter) top-alist))
-		(set! top-counter (+ top-counter 1))
-		(- top-counter 1)))))))
+    #f
+    (let* ((cno (const-no d))
+           (ass (assv cno top-alist)))
+      (if ass
+          (cdr ass)
+          (begin
+        (set! top-alist (cons (cons cno top-counter) top-alist))
+        (set! top-counter (+ top-counter 1))
+        (- top-counter 1)))))))
 
 (define code-abs-number
   (lambda (n)
     (let* ((msb (quotient n 256))
-	   (lsb (modulo n 256))
-	   (msc (integer->char msb))
-	   (lsc (integer->char lsb)))
+       (lsb (modulo n 256))
+       (msc (integer->char msb))
+       (lsc (integer->char lsb)))
       (string msc lsc))))
 
 (define code-one-const
   (lambda (desc)
     (cond ((null? desc)
-	   "0")                              ; 0 pour EMPTY
-	  ((pair? desc)
-	   (string-append "1"                ; 1 pour PAIR
-			  (code-abs-number (car desc))
-			  (code-abs-number (cdr desc))))
-	  ((boolean? desc)
-	   (if desc "2t" "2f"))              ; 2 pour BOOLEAN
-	  ((char? desc)
-	   (string #\3 desc))                ; 3 pour CHAR
-	  ((string? desc)
-	   (string-append "4"                ; 4 pour STRING
-			  (code-abs-number (string-length desc))
-			  desc))
-	  ((symbol? desc)
-	   (string-append "5"                ; 5 pour SYMBOL
-			  (code-abs-number
-			   (string->number (symbol->string desc)))))
-	  ((number? desc)
-	   (string-append "6"                ; 6 pour NUMBER
-			  (if (< desc 0) "-" "+")
-			  (code-abs-number (abs desc))))
-	  ((vector? desc)
-	   (let* ((listref (vector->list desc))
-		  (listcodes (map code-abs-number listref))
-		  (listallcodes
-		   (cons "7"                 ; 7 pour VECTOR
-			 (cons (code-abs-number (vector-length desc))
-			       listcodes))))
-	     (apply string-append listallcodes))))))
+       "0")                              ; 0 pour EMPTY
+      ((pair? desc)
+       (string-append "1"                ; 1 pour PAIR
+              (code-abs-number (car desc))
+              (code-abs-number (cdr desc))))
+      ((boolean? desc)
+       (if desc "2t" "2f"))              ; 2 pour BOOLEAN
+      ((char? desc)
+       (string #\3 desc))                ; 3 pour CHAR
+      ((string? desc)
+       (string-append "4"                ; 4 pour STRING
+              (code-abs-number (string-length desc))
+              desc))
+      ((symbol? desc)
+       (string-append "5"                ; 5 pour SYMBOL
+              (code-abs-number
+               (string->number (symbol->string desc)))))
+      ((number? desc)
+       (string-append "6"                ; 6 pour NUMBER
+              (if (< desc 0) "-" "+")
+              (code-abs-number (abs desc))))
+      ((vector? desc)
+       (let* ((listref (vector->list desc))
+          (listcodes (map code-abs-number listref))
+          (listallcodes
+           (cons "7"                 ; 7 pour VECTOR
+             (cons (code-abs-number (vector-length desc))
+                   listcodes))))
+         (apply string-append listallcodes))))))
 
 (define code-in-const
   (lambda (nbconst const-alist)
     (let* ((right-alist (reverse const-alist))
-	   (listdesc (map cddr right-alist))
-	   (listcodes (map code-one-const listdesc))
-	   (listallcodes (cons (code-abs-number nbconst) listcodes)))
+       (listdesc (map cddr right-alist))
+       (listcodes (map code-one-const listdesc))
+       (listallcodes (cons (code-abs-number nbconst) listcodes)))
       (apply string-append listallcodes))))
 
 (define code-top-const
   (lambda (nbtop top-alist)
     (let* ((right-alist (reverse top-alist))
-	   (listtop (map car right-alist))
-	   (listcodes (map code-abs-number listtop))
-	   (listallcodes (cons (code-abs-number nbtop) listcodes)))
+       (listtop (map car right-alist))
+       (listcodes (map code-abs-number listtop))
+       (listallcodes (cons (code-abs-number nbtop) listcodes)))
       (apply string-append listallcodes))))
 
 (define code-const
   (lambda ()
     (string-append (code-in-const const-counter const-alist)
-		   (code-top-const top-counter top-alist))))
+           (code-top-const top-counter top-alist))))
 
 
 
@@ -937,37 +937,37 @@
   (lambda (name lib?)
     (or
      (cond ((memq name libpublics)
-	    (let ((ass (assq name glob-public)))
-	      (if ass
-		  (cdr ass)
-		  (let ((newass (cons name glob-counter)))
-		    (set! glob-public (cons newass glob-public))
-		    #f))))
-	   (lib?
-	    (let ((ass (assq name glob-hidden)))
-	      (if ass
-		  (cdr ass)
-		  (let ((newass (cons name glob-counter)))
-		    (set! glob-hidden (cons newass glob-hidden))
-		    #f))))
-	   (else
-	    (let ((ass (assq name glob-source)))
-	      (if ass
-		  (cdr ass)
-		  (let ((newass (cons name glob-counter)))
-		    (set! glob-source (cons newass glob-source))
-		    #f)))))
+        (let ((ass (assq name glob-public)))
+          (if ass
+          (cdr ass)
+          (let ((newass (cons name glob-counter)))
+            (set! glob-public (cons newass glob-public))
+            #f))))
+       (lib?
+        (let ((ass (assq name glob-hidden)))
+          (if ass
+          (cdr ass)
+          (let ((newass (cons name glob-counter)))
+            (set! glob-hidden (cons newass glob-hidden))
+            #f))))
+       (else
+        (let ((ass (assq name glob-source)))
+          (if ass
+          (cdr ass)
+          (let ((newass (cons name glob-counter)))
+            (set! glob-source (cons newass glob-source))
+            #f)))))
      (begin
        (if (= glob-counter glob-v-len)
-	   (let* ((newlen (+ (* 2 glob-v-len) 1))
-		  (newv (make-vector newlen)))
-	     (let loop ((pos 0))
-	       (if (< pos glob-v-len)
-		   (begin
-		     (vector-set! newv pos (vector-ref glob-v pos))
-		     (loop (+ pos 1)))))
-	     (set! glob-v newv)
-	     (set! glob-v-len newlen)))
+       (let* ((newlen (+ (* 2 glob-v-len) 1))
+          (newv (make-vector newlen)))
+         (let loop ((pos 0))
+           (if (< pos glob-v-len)
+           (begin
+             (vector-set! newv pos (vector-ref glob-v pos))
+             (loop (+ pos 1)))))
+         (set! glob-v newv)
+         (set! glob-v-len newlen)))
        (vector-set! glob-v glob-counter (make-globdesc-node name lib? 0))
        (set! glob-counter (+ glob-counter 1))
        (- glob-counter 1)))))
@@ -984,20 +984,20 @@
 (define where-var
   (lambda (name env)
     (if (null? env)
-	(cons 'glob name)
-	(let* ((locals (car env))
-	       (membership (memq name locals)))
-	  (if membership
-	      (let* ((nblocals (length locals))
-		     (pos (- nblocals (length membership)))
-		     (declpos (if (= nblocals 1) #f pos)))
-		(cons 'lex (cons 0 declpos)))
-	      (let ((result (where-var name (cdr env))))
-		(if (eq? (car result) 'glob)
-		    result
-		    (let ((frame (cadr result))
-			  (offset (cddr result)))
-		      (cons 'lex (cons (+ frame 1) offset))))))))))
+    (cons 'glob name)
+    (let* ((locals (car env))
+           (membership (memq name locals)))
+      (if membership
+          (let* ((nblocals (length locals))
+             (pos (- nblocals (length membership)))
+             (declpos (if (= nblocals 1) #f pos)))
+        (cons 'lex (cons 0 declpos)))
+          (let ((result (where-var name (cdr env))))
+        (if (eq? (car result) 'glob)
+            result
+            (let ((frame (cadr result))
+              (offset (cddr result)))
+              (cons 'lex (cons (+ frame 1) offset))))))))))
 
 
 
@@ -1015,9 +1015,9 @@
 (define traverse1-ref-node
   (lambda (node env lib?)
     (let* ((name (get-symbol node))
-	   (pos (where-var name env))
-	   (glob? (eq? (car pos) 'glob))
-	   (loc (if glob? (glob-var-no name lib?) (cdr pos))))
+       (pos (where-var name env))
+       (glob? (eq? (car pos) 'glob))
+       (loc (if glob? (glob-var-no name lib?) (cdr pos))))
       (set-glob?! node glob?)
       (set-loc! node loc))))
 
@@ -1025,18 +1025,18 @@
   (lambda (formals)
     (let loop ((nbreq 0) (formals formals))
       (cond ((null? formals)
-	     (cons nbreq #f))
-	    ((symbol? formals)
-	     (cons nbreq #t))
-	    (else
-	     (loop (+ nbreq 1) (cdr formals)))))))
+         (cons nbreq #f))
+        ((symbol? formals)
+         (cons nbreq #t))
+        (else
+         (loop (+ nbreq 1) (cdr formals)))))))
 
 (define traverse1-lambda-node
   (lambda (node env lib?)
     (let* ((formals (get-formals node))
-	   (varlist (formals->varlist formals))
-	   (newenv (if (null? varlist) env (cons varlist env)))
-	   (fdesc (formals->fdesc formals)))
+       (varlist (formals->varlist formals))
+       (newenv (if (null? varlist) env (cons varlist env)))
+       (fdesc (formals->fdesc formals)))
       (set-fdesc! node fdesc)
       (traverse1-node (get-body node) newenv lib?))))
 
@@ -1049,15 +1049,15 @@
 (define traverse1-set!-node
   (lambda (node env lib?)
     (let* ((name (get-symbol node))
-	   (pos (where-var name env))
-	   (glob? (eq? (car pos) 'glob))
-	   (loc (if glob? (glob-var-no name lib?) (cdr pos))))
+       (pos (where-var name env))
+       (glob? (eq? (car pos) 'glob))
+       (loc (if glob? (glob-var-no name lib?) (cdr pos))))
       (set-glob?! node glob?)
       (set-loc! node loc)
       (if glob?
-	  (let* ((desc (vector-ref glob-v loc))
-		 (oldnb (get-nbaff desc)))
-	    (set-nbaff! desc (+ oldnb 2)))))  ; Declare la var. mut.
+      (let* ((desc (vector-ref glob-v loc))
+         (oldnb (get-nbaff desc)))
+        (set-nbaff! desc (+ oldnb 2)))))  ; Declare la var. mut.
     (traverse1-node (get-exp node) env lib?)))
 
 (define traverse1-begin-node
@@ -1068,8 +1068,8 @@
 (define traverse1-def-node
   (lambda (node env lib?)
     (let* ((loc (glob-var-no (get-symbol node) lib?))
-	   (desc (vector-ref glob-v loc))
-	   (oldnb (get-nbaff desc)))
+       (desc (vector-ref glob-v loc))
+       (oldnb (get-nbaff desc)))
       (set-loc! node loc)
       (set-nbaff! desc (+ oldnb 1)))
     (traverse1-node (get-exp node) env lib?)))
@@ -1082,15 +1082,15 @@
 
 (define traverse1-node
   (let ((action-v
-	 (vector
-	  traverse1-cte-node
-	  traverse1-ref-node
-	  traverse1-lambda-node
-	  traverse1-if-node
-	  traverse1-set!-node
-	  traverse1-begin-node
-	  traverse1-def-node
-	  traverse1-call-node)))
+     (vector
+      traverse1-cte-node
+      traverse1-ref-node
+      traverse1-lambda-node
+      traverse1-if-node
+      traverse1-set!-node
+      traverse1-begin-node
+      traverse1-def-node
+      traverse1-call-node)))
     (lambda (node env lib?)
       ((vector-ref action-v (node-type node)) node env lib?))))
 
@@ -1099,13 +1099,13 @@
     (for-each
      (lambda (name)
        (let* ((no (glob-var-no name #t))
-	      (desc (vector-ref glob-v no)))
-	 (set-nbaff! desc 1)))
+          (desc (vector-ref glob-v no)))
+     (set-nbaff! desc 1)))
      allreq)
     (for-each (lambda (node) (traverse1-node node '() #t))
-	      (map cdr req-clos-nodes))
+          (map cdr req-clos-nodes))
     (for-each (lambda (node) (traverse1-node node '() #f))
-	      lnode)))
+          lnode)))
 
 
 
@@ -1116,29 +1116,29 @@
   (lambda (name)
     (let ((asscprim (assq name libcprims)))
       (if asscprim
-	  (cons 'cprim (cdr asscprim))
-	  (let ((assalias (assq name libalias)))
-	    (if assalias
-		(find-an-init (cdr assalias))
-		(let ((node (cdr (assq name req-clos-nodes))))
-		  (if (lambda-node? node)
-		      (cons 'clos node)
-		      (begin
-			(display "Error: fonct. de la lib. a env. non-vide: ")
-			(write name)
-			(newline)
-			(cons 'clos 0))))))))))
+      (cons 'cprim (cdr asscprim))
+      (let ((assalias (assq name libalias)))
+        (if assalias
+        (find-an-init (cdr assalias))
+        (let ((node (cdr (assq name req-clos-nodes))))
+          (if (lambda-node? node)
+              (cons 'clos node)
+              (begin
+            (display "Error: fonct. de la lib. a env. non-vide: ")
+            (write name)
+            (newline)
+            (cons 'clos 0))))))))))
 
 (define find-inits
   (lambda ()
     (let loop ((no 0))
       (if (< no glob-counter)
-	  (let ((desc (vector-ref glob-v no)))
-	    (if (get-lib? desc)
-		(let* ((name (get-symbol desc))
-		       (init (find-an-init name)))
-		  (set-init! desc init)))
-	    (loop (+ no 1)))))))
+      (let ((desc (vector-ref glob-v no)))
+        (if (get-lib? desc)
+        (let* ((name (get-symbol desc))
+               (init (find-an-init name)))
+          (set-init! desc init)))
+        (loop (+ no 1)))))))
 
 
 
@@ -1171,30 +1171,30 @@
   (lambda (name nbargs)
     (let ((rule (assq name reduce-list)))
       (if (not rule)
-	  #f
-	  (if (= nbargs (cadr rule))
-	      (caddr rule)
-	      #f)))))
+      #f
+      (if (= nbargs (cadr rule))
+          (caddr rule)
+          #f)))))
 
 (define optimize-call
   (lambda (node match)
     (let* ((symbol-field match)
-	   (glob?-field  #t)
-	   (loc-field    (glob-var-no match #t))
-	   (var-desc     (vector-ref glob-v loc-field))
-	   (val-field    (get-init var-desc))
-	   (new-op       (make-ref-node-full symbol-field
-					     loc-field
-					     val-field
-					     glob?-field)))
+       (glob?-field  #t)
+       (loc-field    (glob-var-no match #t))
+       (var-desc     (vector-ref glob-v loc-field))
+       (val-field    (get-init var-desc))
+       (new-op       (make-ref-node-full symbol-field
+                         loc-field
+                         val-field
+                         glob?-field)))
       (set-op! node new-op))))
 
 (define reduce-call
   (lambda (node)
     (let* ((op (get-op node))
-	   (name (get-symbol op))
-	   (nbargs (length (get-larg node)))
-	   (match (reduced-function name nbargs)))
+       (name (get-symbol op))
+       (nbargs (length (get-larg node)))
+       (match (reduced-function name nbargs)))
       (if match (optimize-call node match)))))
 
 (define traverse2-cte-node
@@ -1204,16 +1204,16 @@
 (define traverse2-ref-node
   (lambda (node lib?)
     (if (get-glob? node)
-	(set-val! node
-		  (let* ((vardesc (vector-ref glob-v (get-loc node)))
-			 (varinit (get-init vardesc)))
-		    (if lib?
-			varinit
-			(if (not (get-lib? vardesc))
-			    #f
-			    (if (> (get-nbaff vardesc) 1)
-				#f
-				varinit))))))))
+    (set-val! node
+          (let* ((vardesc (vector-ref glob-v (get-loc node)))
+             (varinit (get-init vardesc)))
+            (if lib?
+            varinit
+            (if (not (get-lib? vardesc))
+                #f
+                (if (> (get-nbaff vardesc) 1)
+                #f
+                varinit))))))))
 
 (define traverse2-lambda-node
   (lambda (node lib?)
@@ -1232,7 +1232,7 @@
 (define traverse2-begin-node
   (lambda (node lib?)
     (for-each (lambda (node) (traverse2-node node lib?))
-	      (get-lexp node))))
+          (get-lexp node))))
 
 (define traverse2-def-node
   (lambda (node lib?)
@@ -1243,30 +1243,30 @@
     (let ((op (get-op node)))
       (traverse2-node op lib?)
       (for-each (lambda (node) (traverse2-node node lib?))
-		(get-larg node))
+        (get-larg node))
       (if (and (ref-node? op) (get-glob? op) (get-val op))
-	  (reduce-call node)))))
+      (reduce-call node)))))
 
 (define traverse2-node
   (let ((action-v
-	 (vector
-	  traverse2-cte-node
-	  traverse2-ref-node
-	  traverse2-lambda-node
-	  traverse2-if-node
-	  traverse2-set!-node
-	  traverse2-begin-node
-	  traverse2-def-node
-	  traverse2-call-node)))
+     (vector
+      traverse2-cte-node
+      traverse2-ref-node
+      traverse2-lambda-node
+      traverse2-if-node
+      traverse2-set!-node
+      traverse2-begin-node
+      traverse2-def-node
+      traverse2-call-node)))
     (lambda (node lib?)
       ((vector-ref action-v (node-type node)) node lib?))))
 
 (define traverse2
   (lambda ()
     (for-each (lambda (node) (traverse2-node node #t))
-	      (map cdr req-clos-nodes))
+          (map cdr req-clos-nodes))
     (for-each (lambda (node) (traverse2-node node #f))
-	      lnode)))
+          lnode)))
 
 
 
@@ -1284,21 +1284,21 @@
   (lambda ()
     (let loop ((no 0))
       (if (< no glob-counter)
-	  (let* ((desc (vector-ref glob-v no))
-		 (libvar? (get-lib? desc))
-		 (mutvar? (> (get-nbaff desc) 1)))
-	    (cond ((not libvar?)
-		   (let ((phys-no (gen-phys-no)))
-		     (set-libno! desc phys-no)
-		     (set-srcno! desc phys-no)))
-		  (mutvar?
-		   (set-libno! desc (gen-phys-no))
-		   (set-srcno! desc (gen-phys-no)))
-		  (else
-		   (let ((phys-no (gen-phys-no)))
-		     (set-libno! desc phys-no)
-		     (set-srcno! desc phys-no))))
-	    (loop (+ no 1)))))))
+      (let* ((desc (vector-ref glob-v no))
+         (libvar? (get-lib? desc))
+         (mutvar? (> (get-nbaff desc) 1)))
+        (cond ((not libvar?)
+           (let ((phys-no (gen-phys-no)))
+             (set-libno! desc phys-no)
+             (set-srcno! desc phys-no)))
+          (mutvar?
+           (set-libno! desc (gen-phys-no))
+           (set-srcno! desc (gen-phys-no)))
+          (else
+           (let ((phys-no (gen-phys-no)))
+             (set-libno! desc phys-no)
+             (set-srcno! desc phys-no))))
+        (loop (+ no 1)))))))
 
 
 
@@ -1312,15 +1312,15 @@
 (define make-label
   (lambda ()
     (if (= label-counter label-v-len)
-	(let* ((newlen (+ (* label-v-len 2) 1))
-	       (newv (make-vector newlen)))
-	  (let loop ((pos 0))
-	    (if (< pos label-counter)
-		(begin
-		  (vector-set! newv pos (vector-ref label-v pos))
-		  (loop (+ pos 1)))))
-	  (set! label-v newv)
-	  (set! label-v-len newlen)))
+    (let* ((newlen (+ (* label-v-len 2) 1))
+           (newv (make-vector newlen)))
+      (let loop ((pos 0))
+        (if (< pos label-counter)
+        (begin
+          (vector-set! newv pos (vector-ref label-v pos))
+          (loop (+ pos 1)))))
+      (set! label-v newv)
+      (set! label-v-len newlen)))
     (set! label-counter (+ label-counter 1))
     (- label-counter 1)))
 
@@ -1336,7 +1336,7 @@
 (define bcompile-no
   (lambda (no)
     (let ((msb (quotient no 256))
-	  (lsb (modulo no 256)))
+      (lsb (modulo no 256)))
       (list msb lsb))))
 
 (define bcompile-cte-null     ; 27 pour ()
@@ -1354,36 +1354,36 @@
 (define bcompile-cte-number   ; courts: + 31 - 32, longs: + 33 - 34
   (lambda (n)
     (if (>= n 0)
-	(if (< n 256)
-	    (list 31 n)
-	    (list 33 (bcompile-no n)))
-	(if (< (- n) 256)
-	    (list 32 (- n))
-	    (list 34 (bcompile-no (- n)))))))
+    (if (< n 256)
+        (list 31 n)
+        (list 33 (bcompile-no n)))
+    (if (< (- n) 256)
+        (list 32 (- n))
+        (list 34 (bcompile-no (- n)))))))
 
 (define bcompile-cte-imm
   (lambda (cte)
     (cond ((null? cte)
-	   (bcompile-cte-null))
-	  ((boolean? cte)
-	   (bcompile-cte-boolean cte))
-	  ((char? cte)
-	   (bcompile-cte-char cte))
-	  (else
-	   (bcompile-cte-number cte)))))
+       (bcompile-cte-null))
+      ((boolean? cte)
+       (bcompile-cte-boolean cte))
+      ((char? cte)
+       (bcompile-cte-char cte))
+      (else
+       (bcompile-cte-number cte)))))
 
 (define bcompile-cte-built
   (lambda (no)
     (if (< no 256)
-	(list 0 no)
-	(list 1 (bcompile-no no)))))
+    (list 0 no)
+    (list 1 (bcompile-no no)))))
 
 (define bcompile-cte
   (lambda (node tail? lib?)
     (let* ((const-no (get-no node))
-	   (get-cte-bc (if const-no
-			   (bcompile-cte-built const-no)
-			   (bcompile-cte-imm (get-cte node)))))
+       (get-cte-bc (if const-no
+               (bcompile-cte-built const-no)
+               (bcompile-cte-imm (get-cte node)))))
       (if tail? (list get-cte-bc 14) get-cte-bc))))
 
 (define special-lex-pos
@@ -1397,93 +1397,93 @@
 (define bcompile-ref-lex
   (lambda (node)
     (let* ((loc (get-loc node))
-	   (frame (car loc))
-	   (offset (cdr loc))
-	   (spec (special-lex-pos frame (if offset offset 0))))
+       (frame (car loc))
+       (offset (cdr loc))
+       (spec (special-lex-pos frame (if offset offset 0))))
       (cond (spec
-	     (list (+ spec 36)))
-	    (offset
-	     (if (and (< frame 256) (< offset 256))
-		 (list 2 frame offset)
-		 (list 3 (bcompile-no frame) (bcompile-no offset))))
-	    (else
-	     (if (< frame 256)
-		 (list 2 frame)
-		 (list 3 (bcompile-no frame))))))))
+         (list (+ spec 36)))
+        (offset
+         (if (and (< frame 256) (< offset 256))
+         (list 2 frame offset)
+         (list 3 (bcompile-no frame) (bcompile-no offset))))
+        (else
+         (if (< frame 256)
+         (list 2 frame)
+         (list 3 (bcompile-no frame))))))))
 
 (define bcompile-ref-glob
   (lambda (node lib?)
     (let* ((loc (get-loc node))
-	   (vardesc (vector-ref glob-v loc))
-	   (phys-no (if lib? (get-libno vardesc) (get-srcno vardesc))))
+       (vardesc (vector-ref glob-v loc))
+       (phys-no (if lib? (get-libno vardesc) (get-srcno vardesc))))
       (if (< phys-no 256)
-	  (list 4 phys-no)
-	  (list 5 (bcompile-no phys-no))))))
+      (list 4 phys-no)
+      (list 5 (bcompile-no phys-no))))))
 
 (define bcompile-ref
   (lambda (node tail? lib?)
     (let ((result (if (get-glob? node)
-		      (bcompile-ref-glob node lib?)
-		      (bcompile-ref-lex node))))
+              (bcompile-ref-glob node lib?)
+              (bcompile-ref-lex node))))
       (if tail? (list result 14) result))))
 
 (define bcompile-set!-lex
   (lambda (node)
     (let* ((loc (get-loc node))
-	   (frame (car loc))
-	   (offset (cdr loc)))
+       (frame (car loc))
+       (offset (cdr loc)))
       (if offset
-	  (if (and (< frame 256) (< offset 256))
-	      (list 6 frame offset)
-	      (list 7 (bcompile-no frame) (bcompile-no offset)))
-	  (if (< frame 256)
-	      (list 6 frame)
-	      (list 7 (bcompile-no frame)))))))
+      (if (and (< frame 256) (< offset 256))
+          (list 6 frame offset)
+          (list 7 (bcompile-no frame) (bcompile-no offset)))
+      (if (< frame 256)
+          (list 6 frame)
+          (list 7 (bcompile-no frame)))))))
 
 (define bcompile-set!-glob
   (lambda (node lib?)
     (let* ((loc (get-loc node))
-	   (vardesc (vector-ref glob-v loc))
-	   (phys-no (if lib? (get-libno vardesc) (get-srcno vardesc))))
+       (vardesc (vector-ref glob-v loc))
+       (phys-no (if lib? (get-libno vardesc) (get-srcno vardesc))))
       (if (< phys-no 256)
-	  (list 8 phys-no)
-	  (list 9 (bcompile-no phys-no))))))
+      (list 8 phys-no)
+      (list 9 (bcompile-no phys-no))))))
 
 (define bcompile-set!
   (lambda (node tail? lib?)
     (let* ((exp (get-exp node))
-	   (exp-bc (bcompile exp #f lib?))
-	   (aff-bc (if (get-glob? node)
-		       (bcompile-set!-glob node lib?)
-		       (bcompile-set!-lex node)))
-	   (set!-bc (list exp-bc aff-bc)))
+       (exp-bc (bcompile exp #f lib?))
+       (aff-bc (if (get-glob? node)
+               (bcompile-set!-glob node lib?)
+               (bcompile-set!-lex node)))
+       (set!-bc (list exp-bc aff-bc)))
       (if tail? (list set!-bc 14) set!-bc))))
 
 (define bcompile-def
   (lambda (node tail? lib?)
     (let* ((exp (get-exp node))
-	   (exp-bc (bcompile exp #f lib?))
-	   (aff-bc (bcompile-set!-glob node lib?))
-	   (def-bc (list exp-bc aff-bc)))
+       (exp-bc (bcompile exp #f lib?))
+       (aff-bc (bcompile-set!-glob node lib?))
+       (def-bc (list exp-bc aff-bc)))
       (if tail? (list def-bc 14) def-bc))))
 
 (define bcompile-pop-n
   (lambda (n)
     (cond ((= n 1)
-	   '(51))
-	  ((< n 256)
-	   (list 49 n))
-	  (else
-	   (list 50 (bcompile-no n))))))
+       '(51))
+      ((< n 256)
+       (list 49 n))
+      (else
+       (list 50 (bcompile-no n))))))
 
 (define bcompile-begin
   (lambda (node tail? lib?)
     (let loop ((lexp (get-lexp node)) (nb-prev 0))
       (if (null? (cdr lexp))
-	  (list (bcompile-pop-n nb-prev)
-		(bcompile (car lexp) tail? lib?))
-	  (list (bcompile (car lexp) #f lib?)
-		(loop (cdr lexp) (+ nb-prev 1)))))))
+      (list (bcompile-pop-n nb-prev)
+        (bcompile (car lexp) tail? lib?))
+      (list (bcompile (car lexp) #f lib?)
+        (loop (cdr lexp) (+ nb-prev 1)))))))
 
 (define bcompile-label-def
   (lambda (no)
@@ -1496,194 +1496,194 @@
 (define bcompile-if
   (lambda (node tail? lib?)
     (let* ((debut-altern    (make-label))
-	   (fin-altern      (if tail? #f (make-label)))
-	   (test-bc         (bcompile (get-test node) #f lib?))
-	   (cjump-bc        (list 11 (bcompile-label-ref debut-altern)))
-	   (conseq-bc       (bcompile (get-conseq node) tail? lib?))
-	   (ujump-bc        (if tail?
-				'()
-				(list 12 (bcompile-label-ref fin-altern))))
-	   (debut-altern-bc (bcompile-label-def debut-altern))
-	   (altern-bc       (bcompile (get-altern node) tail? lib?))
-	   (fin-altern-bc   (if tail?
-				'()
-				(bcompile-label-def fin-altern))))
+       (fin-altern      (if tail? #f (make-label)))
+       (test-bc         (bcompile (get-test node) #f lib?))
+       (cjump-bc        (list 11 (bcompile-label-ref debut-altern)))
+       (conseq-bc       (bcompile (get-conseq node) tail? lib?))
+       (ujump-bc        (if tail?
+                '()
+                (list 12 (bcompile-label-ref fin-altern))))
+       (debut-altern-bc (bcompile-label-def debut-altern))
+       (altern-bc       (bcompile (get-altern node) tail? lib?))
+       (fin-altern-bc   (if tail?
+                '()
+                (bcompile-label-def fin-altern))))
       (list test-bc cjump-bc conseq-bc ujump-bc
-	    debut-altern-bc altern-bc fin-altern-bc))))
+        debut-altern-bc altern-bc fin-altern-bc))))
 
 (define bcompile-make-frame
   (lambda (fdesc)
     (let* ((nbreq (car fdesc))
-	   (fac? (cdr fdesc))
-	   (frame-size (+ nbreq (if fac? 1 0))))
+       (fac? (cdr fdesc))
+       (frame-size (+ nbreq (if fac? 1 0))))
       (cond ((= frame-size 0)
-	     '())
-	    ((and (= frame-size 1) (not fac?))
-	     '(42))
-	    ((and (= frame-size 2) (not fac?))
-	     '(43))
-	    ((and (= frame-size 1) fac?)
-	     '(44))
-	    (fac?
-	     (if (< frame-size 256)
-		 (list 22 frame-size)
-		 (list 23 (bcompile-no frame-size))))
-	    (else
-	     (if (< frame-size 256)
-		 (list 20 frame-size)
-		 (list 21 (bcompile-no frame-size))))))))
+         '())
+        ((and (= frame-size 1) (not fac?))
+         '(42))
+        ((and (= frame-size 2) (not fac?))
+         '(43))
+        ((and (= frame-size 1) fac?)
+         '(44))
+        (fac?
+         (if (< frame-size 256)
+         (list 22 frame-size)
+         (list 23 (bcompile-no frame-size))))
+        (else
+         (if (< frame-size 256)
+         (list 20 frame-size)
+         (list 21 (bcompile-no frame-size))))))))
 
 (define bcompile-closure
   (lambda (node lib?)
     (let* ((fdesc (get-fdesc node))
-	   (make-frame-bc (bcompile-make-frame fdesc))
-	   (body-bc (bcompile (get-body node) #t lib?)))
+       (make-frame-bc (bcompile-make-frame fdesc))
+       (body-bc (bcompile (get-body node) #t lib?)))
       (list make-frame-bc body-bc))))
 
 (define bcompile-lambda
   (lambda (node tail? lib?)
     (let ((clos-bc (bcompile-closure node lib?)))
       (if tail?
-	  (list 10 clos-bc)
-	  (let* ((suite (make-label))
-		 (make-clos-bc (list 48 (bcompile-label-ref suite)))
-		 (suite-bc (bcompile-label-def suite)))
-	    (list make-clos-bc clos-bc suite-bc))))))
+      (list 10 clos-bc)
+      (let* ((suite (make-label))
+         (make-clos-bc (list 48 (bcompile-label-ref suite)))
+         (suite-bc (bcompile-label-def suite)))
+        (list make-clos-bc clos-bc suite-bc))))))
 
 (define bcompile-calc-args
   (lambda (larg lib?)
     (let loop ((larg larg) (prev-args-bc '()))
       (if (null? larg)
-	  prev-args-bc
-	  (let* ((arg (car larg))
-		 (reste (cdr larg))
-		 (calc-arg-bc (bcompile arg #f lib?)))
-	    (loop reste (list calc-arg-bc prev-args-bc)))))))
+      prev-args-bc
+      (let* ((arg (car larg))
+         (reste (cdr larg))
+         (calc-arg-bc (bcompile arg #f lib?)))
+        (loop reste (list calc-arg-bc prev-args-bc)))))))
 
 (define bcompile-call-C
   (lambda (node tail? lib?)
     (let ((cprim-no (cdr (get-val (get-op node)))))
       (if (= cprim-no apply1-cprim-no)
-	  (bcompile-call-I node tail? lib?)     ; Le cas apply
-	  (let* ((larg (get-larg node))
-		 (calc-args-bc (bcompile-calc-args larg lib?))
-		 (apply-bc (list (- 255 cprim-no)))
-		 (call-bc (list calc-args-bc apply-bc)))
-	    (if tail?
-		(list 15 call-bc 14)
-		(list 25 call-bc 26)))))))
+      (bcompile-call-I node tail? lib?)     ; Le cas apply
+      (let* ((larg (get-larg node))
+         (calc-args-bc (bcompile-calc-args larg lib?))
+         (apply-bc (list (- 255 cprim-no)))
+         (call-bc (list calc-args-bc apply-bc)))
+        (if tail?
+        (list 15 call-bc 14)
+        (list 25 call-bc 26)))))))
 
 (define bcompile-call-Fi
   (lambda (node tail? lib?)
     (let* ((op (get-op node))
-	   (larg (get-larg node))
-	   (calc-args-bc (bcompile-calc-args larg lib?))
-	   (fdesc (get-fdesc op))
-	   (make-frame-bc (bcompile-make-frame fdesc))
-	   (body (get-body op))
-	   (body-bc (bcompile body tail? lib?)))
+       (larg (get-larg node))
+       (calc-args-bc (bcompile-calc-args larg lib?))
+       (fdesc (get-fdesc op))
+       (make-frame-bc (bcompile-make-frame fdesc))
+       (body (get-body op))
+       (body-bc (bcompile body tail? lib?)))
       (if tail?
-	  (list 15 calc-args-bc make-frame-bc body-bc)
-	  (list 25 calc-args-bc make-frame-bc body-bc 26 35)))))
+      (list 15 calc-args-bc make-frame-bc body-bc)
+      (list 25 calc-args-bc make-frame-bc body-bc 26 35)))))
 
 (define bcompile-call-I
   (lambda (node tail? lib?)
     (let ((op (get-op node)))
       (if (and (ref-node? op) (get-glob? op))
-	  (let* ((larg (get-larg node))
-		 (calc-args-bc (bcompile-calc-args larg lib?))
-		 (var-desc (vector-ref glob-v (get-loc op)))
-		 (phys-no (if lib? (get-libno var-desc) (get-srcno var-desc))))
-	    (if (< phys-no 256)
-		(if tail?
-		    (list 15 calc-args-bc 52 phys-no)
-		    (list 45 calc-args-bc 54 phys-no))
-		(if tail?
-		    (list 15 calc-args-bc 53 (bcompile-no phys-no))
-		    (list 45 calc-args-bc 55 (bcompile-no phys-no)))))
-	  (let* ((larg (get-larg node))
-		 (allarg (cons op larg))
-		 (allarg-bc (bcompile-calc-args allarg lib?)))
-	    (if tail?
-		(list 15 allarg-bc 17)
-		(list 45 allarg-bc 46)))))))
+      (let* ((larg (get-larg node))
+         (calc-args-bc (bcompile-calc-args larg lib?))
+         (var-desc (vector-ref glob-v (get-loc op)))
+         (phys-no (if lib? (get-libno var-desc) (get-srcno var-desc))))
+        (if (< phys-no 256)
+        (if tail?
+            (list 15 calc-args-bc 52 phys-no)
+            (list 45 calc-args-bc 54 phys-no))
+        (if tail?
+            (list 15 calc-args-bc 53 (bcompile-no phys-no))
+            (list 45 calc-args-bc 55 (bcompile-no phys-no)))))
+      (let* ((larg (get-larg node))
+         (allarg (cons op larg))
+         (allarg-bc (bcompile-calc-args allarg lib?)))
+        (if tail?
+        (list 15 allarg-bc 17)
+        (list 45 allarg-bc 46)))))))
 
 (define bcompile-call
   (lambda (node tail? lib?)
     (let ((op (get-op node)))
       (cond ((ref-node? op)
-	     (let ((val (get-val op)))
-	       (if (and val (eq? (car val) 'cprim))
-		   (bcompile-call-C node tail? lib?)
-		   (bcompile-call-I node tail? lib?))))
-	    ((lambda-node? op)
-	     (bcompile-call-Fi node tail? lib?))
-	    (else
-	     (bcompile-call-I node tail? lib?))))))
+         (let ((val (get-val op)))
+           (if (and val (eq? (car val) 'cprim))
+           (bcompile-call-C node tail? lib?)
+           (bcompile-call-I node tail? lib?))))
+        ((lambda-node? op)
+         (bcompile-call-Fi node tail? lib?))
+        (else
+         (bcompile-call-I node tail? lib?))))))
 
 (define bcompile
   (let ((action-v
-	 (vector
-	  bcompile-cte
-	  bcompile-ref
-	  bcompile-lambda
-	  bcompile-if
-	  bcompile-set!
-	  bcompile-begin
-	  bcompile-def
-	  bcompile-call)))
+     (vector
+      bcompile-cte
+      bcompile-ref
+      bcompile-lambda
+      bcompile-if
+      bcompile-set!
+      bcompile-begin
+      bcompile-def
+      bcompile-call)))
     (lambda (node tail? lib?)
       ((vector-ref action-v (node-type node)) node tail? lib?))))
 
 (define bcompile-program
   (lambda ()
     (map (lambda (ass) (set-label! (cdr ass) (make-label)))
-	 req-clos-nodes)
+     req-clos-nodes)
     (let* ((source-bc (map (lambda (node) (list (bcompile node #f #f) 51))
-			   lnode))
-	   (fin-bc (list 24))
-	   (lib-bc (map (lambda (ass)
-			  (let ((node (cdr ass)))
-			    (list (bcompile-label-def (get-label node))
-				  (bcompile-closure node #t))))
-			req-clos-nodes))
-	   (apply-hook-bc (list 17)))
+               lnode))
+       (fin-bc (list 24))
+       (lib-bc (map (lambda (ass)
+              (let ((node (cdr ass)))
+                (list (bcompile-label-def (get-label node))
+                  (bcompile-closure node #t))))
+            req-clos-nodes))
+       (apply-hook-bc (list 17)))
       (list source-bc fin-bc lib-bc apply-hook-bc))))
 
 (define flatten-bytecode
   (lambda (hierarcode)
     (let loop ((h hierarcode) (rest '()))
       (if (pair? h)
-	  (loop (car h) (loop (cdr h) rest))
-	  (if (null? h)
-	      rest
-	      (cons h rest))))))
+      (loop (car h) (loop (cdr h) rest))
+      (if (null? h)
+          rest
+          (cons h rest))))))
 
 (define link-bytecode
   (lambda (flat-reloc-bc)
     (let loop ((bc flat-reloc-bc) (pos 0))
       (if (not (null? bc))
-	  (let ((head (car bc)))
-	    (cond ((number? head)
-		   (loop (cdr bc) (+ pos 1)))
-		  ((eq? head 'ref)
-		   (loop (cddr bc) (+ pos 2)))
-		  (else ; (eq? head 'def)
-		   (let ((label-no (cadr bc)))
-		     (vector-set! label-v label-no pos)
-		     (loop (cddr bc) pos)))))))
+      (let ((head (car bc)))
+        (cond ((number? head)
+           (loop (cdr bc) (+ pos 1)))
+          ((eq? head 'ref)
+           (loop (cddr bc) (+ pos 2)))
+          (else ; (eq? head 'def)
+           (let ((label-no (cadr bc)))
+             (vector-set! label-v label-no pos)
+             (loop (cddr bc) pos)))))))
     (let loop ((bc flat-reloc-bc))
       (if (null? bc)
-	  '()
-	  (let ((head (car bc)))
-	    (cond ((number? head)
-		   (cons head (loop (cdr bc))))
-		  ((eq? head 'ref)
-		   (let* ((label-no (cadr bc))
-			  (pos (vector-ref label-v label-no)))
-		     (append (bcompile-no pos) (loop (cddr bc)))))
-		  (else ; (eq? head 'def)
-		   (loop (cddr bc)))))))))
+      '()
+      (let ((head (car bc)))
+        (cond ((number? head)
+           (cons head (loop (cdr bc))))
+          ((eq? head 'ref)
+           (let* ((label-no (cadr bc))
+              (pos (vector-ref label-v label-no)))
+             (append (bcompile-no pos) (loop (cddr bc)))))
+          (else ; (eq? head 'def)
+           (loop (cddr bc)))))))))
 
 
 
@@ -1695,27 +1695,27 @@
 (define code-init
   (lambda (init)
     (cond ((not init)
-	   -1)
-	  ((eq? (car init) 'cprim)
-	   (- -2 (cdr init)))
-	  (else ; (eq? (car init) 'clos)
-	   (let* ((lambda-node (cdr init))
-		  (label-no (get-label lambda-node)))
-	     (vector-ref label-v label-no))))))
+       -1)
+      ((eq? (car init) 'cprim)
+       (- -2 (cdr init)))
+      (else ; (eq? (car init) 'clos)
+       (let* ((lambda-node (cdr init))
+          (label-no (get-label lambda-node)))
+         (vector-ref label-v label-no))))))
 
 (define code-glob-inits
   (lambda ()
     (let loop ((var-no (- glob-counter 1)) (codes '()))
       (if (< var-no 0)
-	  codes
-	  (let* ((var-desc (vector-ref glob-v var-no))
-		 (var-init (get-init var-desc))
-		 (init-code (code-init var-init))
-		 (newcodes (if (= (get-libno var-desc)
-				  (get-srcno var-desc))
-			       (cons init-code codes)
-			       (cons init-code (cons init-code codes)))))
-	    (loop (- var-no 1) newcodes))))))
+      codes
+      (let* ((var-desc (vector-ref glob-v var-no))
+         (var-init (get-init var-desc))
+         (init-code (code-init var-init))
+         (newcodes (if (= (get-libno var-desc)
+                  (get-srcno var-desc))
+                   (cons init-code codes)
+                   (cons init-code (cons init-code codes)))))
+        (loop (- var-no 1) newcodes))))))
 
 
 
@@ -1757,25 +1757,25 @@
     (let ((len (length bc)))
       (write len)
       (if (> len 32768)
-	  (begin
-	    (display "Warning: bytecode too long.")
-	    (newline))))
+      (begin
+        (display "Warning: bytecode too long.")
+        (newline))))
     (display ";")
     (newline)
     (display "unsigned char bytecode[] = {")
     (let ((virgule ""))
       (let loop ((bc bc) (mod 0))
-	(if (not (null? bc))
-	    (begin
-	      (display virgule)
-	      (set! virgule ",")
-	      (if (= mod 0)
-		  (begin
-		    (newline)
-		    (display "       ")
-		    (set! mod -12)))
-	      (display (vector-ref byte-strings (car bc)))
-	      (loop (cdr bc) (+ mod 1))))))
+    (if (not (null? bc))
+        (begin
+          (display virgule)
+          (set! virgule ",")
+          (if (= mod 0)
+          (begin
+            (newline)
+            (display "       ")
+            (set! mod -12)))
+          (display (vector-ref byte-strings (car bc)))
+          (loop (cdr bc) (+ mod 1))))))
     (display "};")
     (newline)))
 
@@ -1788,26 +1788,26 @@
       (newline)
       (display "unsigned char const_desc[] = {")
       (let ((virgule ""))
-	(let loop ((cd cd) (mod 0))
-	  (if (not (null? cd))
-	      (begin
-		(display virgule)
-		(set! virgule ",")
-		(if (= mod 0)
-		    (begin
-		      (newline)
-		      (display "       ")
-		      (set! mod -12)))
-		(display (vector-ref byte-strings (car cd)))
-		(loop (cdr cd) (+ mod 1))))))
+    (let loop ((cd cd) (mod 0))
+      (if (not (null? cd))
+          (begin
+        (display virgule)
+        (set! virgule ",")
+        (if (= mod 0)
+            (begin
+              (newline)
+              (display "       ")
+              (set! mod -12)))
+        (display (vector-ref byte-strings (car cd)))
+        (loop (cdr cd) (+ mod 1))))))
       (display "};")
       (newline))))
 
 (define pretty-signed-int
   (lambda (int)
     (let* ((sint (number->string int))
-	   (lpadding (- 6 (string-length sint)))
-	   (padding (substring "        " 0 lpadding)))
+       (lpadding (- 6 (string-length sint)))
+       (padding (substring "        " 0 lpadding)))
       (string-append padding sint))))
 
 (define write-glob-init-codes
@@ -1819,17 +1819,17 @@
     (display "int scm_globs[] = {")
     (let ((virgule ""))
       (let loop ((gi glob-var-init-codes) (mod 0))
-	(if (not (null? gi))
-	    (begin
-	      (display virgule)
-	      (set! virgule ",")
-	      (if (= mod 0)
-		  (begin
-		    (newline)
-		    (display "       ")
-		    (set! mod -8)))
-	      (display (pretty-signed-int (car gi)))
-	      (loop (cdr gi) (+ mod 1))))))
+    (if (not (null? gi))
+        (begin
+          (display virgule)
+          (set! virgule ",")
+          (if (= mod 0)
+          (begin
+            (newline)
+            (display "       ")
+            (set! mod -8)))
+          (display (pretty-signed-int (car gi)))
+          (loop (cdr gi) (+ mod 1))))))
     (display "};")
     (newline)))
 
@@ -1850,8 +1850,8 @@
   (lambda ()
     (init-glob-vars)
     (let* ((source (read-source))
-	   (source-symbols (find-all-symbols source))
-	   (uniq-pref (find-uniq-prefix source-symbols)))
+       (source-symbols (find-all-symbols source))
+       (uniq-pref (find-uniq-prefix source-symbols)))
       (set! gen-sym-pref uniq-pref)
       (set! safe-name-memv         (gen-sym))
       (set! safe-name-make-promise (gen-sym))
@@ -1860,30 +1860,30 @@
       (set! safe-name-append2      (gen-sym))
       (set! safe-name-cons         (gen-sym))
       (let* ((source++
-	      (append
-	       (list
-		(list 'define safe-name-memv         'memv)
-		(list 'define safe-name-make-promise 'make-promise)
-		(list 'define safe-name-list->vector 'list->vector)
-		(list 'define safe-name-list         'list)
-		(list 'define safe-name-append2      'append2)
-		(list 'define safe-name-cons         'cons)
-		'(install-const))
-	       source))
-	     (simple (map trans-sub source++)))
-	(set! lnode (map exp->node simple))
-	(let* ((llglob (map extract-glob-names lnode))
-	       (lglob (foldr symbol-set-union '() llglob)))
-	  (load-lib)
-	  (set! dirreq (symbol-set-intersection lglob libpublics))
-	  (grab-lib dirreq)
-	  (traverse1)
-	  (find-inits)
-	  (traverse2)
-	  (assign-phys-no)
-	  (set! program-bytecode (bcompile-program))
-	  (set! flat-program-bytecode (flatten-bytecode program-bytecode))
-	  (set! final-program-bytecode (link-bytecode flat-program-bytecode))
-	  (set! const-desc-string (code-const))
-	  (set! glob-var-init-codes (code-glob-inits))
-	  (write-output final-program-bytecode const-desc-string glob-var-init-codes))))))
+          (append
+           (list
+        (list 'define safe-name-memv         'memv)
+        (list 'define safe-name-make-promise 'make-promise)
+        (list 'define safe-name-list->vector 'list->vector)
+        (list 'define safe-name-list         'list)
+        (list 'define safe-name-append2      'append2)
+        (list 'define safe-name-cons         'cons)
+        '(install-const))
+           source))
+         (simple (map trans-sub source++)))
+    (set! lnode (map exp->node simple))
+    (let* ((llglob (map extract-glob-names lnode))
+           (lglob (foldr symbol-set-union '() llglob)))
+      (load-lib)
+      (set! dirreq (symbol-set-intersection lglob libpublics))
+      (grab-lib dirreq)
+      (traverse1)
+      (find-inits)
+      (traverse2)
+      (assign-phys-no)
+      (set! program-bytecode (bcompile-program))
+      (set! flat-program-bytecode (flatten-bytecode program-bytecode))
+      (set! final-program-bytecode (link-bytecode flat-program-bytecode))
+      (set! const-desc-string (code-const))
+      (set! glob-var-init-codes (code-glob-inits))
+      (write-output final-program-bytecode const-desc-string glob-var-init-codes))))))
