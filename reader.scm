@@ -9,6 +9,7 @@
 (define (char-unquote? ch) (char=? ch #\,))
 (define (char-backslash? ch) (char=? ch #\\))
 (define (char-character? ch) (char=? ch #\#))
+(define (char-minus? ch) (char=? ch #\-))
 (define (identifier-end? ch) (or (char-left-paren? ch)
                                  (char-right-paren? ch)
                                  (char-whitespace? ch)))
@@ -30,6 +31,7 @@
         ((char-string? ch) (read-string))
         ((char-character? ch) (read-char-literal))
         ((char-numeric? ch) (read-number ch))
+        ((and (char-minus? ch) (char-numeric? (peek-char))) (read-number ch))
         (else (read-identifier ch))))
 
 (define (read-char-literal)
