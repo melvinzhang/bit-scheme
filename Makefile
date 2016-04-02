@@ -11,3 +11,6 @@ SHELL=/bin/bash
 
 test-reader: reader
 	for i in *.scm; do echo $$i; diff <(cat $$i | ./reader) <(cat $$i | csi -q read-all.scm); done
+
+test-reader-fail: reader
+	cat reader-fail.scm | ./reader
